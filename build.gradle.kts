@@ -1,5 +1,7 @@
+import java.io.OutputStream
+
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.21"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     `maven-publish`
 }
@@ -34,42 +36,28 @@ subprojects {
     }
 
     dependencies {
-        compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly(kotlin("stdlib"))
         compileOnly(kotlin("reflect"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
-        compileOnly("com.destroystokyo.paper:paper-api:1.16.4-R0.1-SNAPSHOT")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+        compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
         compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
-        compileOnly("com.github.noonmaru:invfx:1.3.0")
+        compileOnly("com.github.monun:invfx:1.4.0")
 
-        implementationOnlyCommon("com.github.noonmaru:tap:3.2.5")
-        implementationOnlyCommon("com.github.noonmaru:kommand:0.6.3")
+        implementationOnlyCommon("com.github.monun:tap:3.3.1")
+        implementationOnlyCommon("com.github.monun:kommand:0.7.0")
 
-        testImplementation("junit:junit:4.13")
-        testImplementation("org.mockito:mockito-core:3.3.3")
-        testImplementation("org.powermock:powermock-module-junit4:2.0.7")
-        testImplementation("org.powermock:powermock-api-mockito2:2.0.7")
-        testImplementation("org.slf4j:slf4j-api:1.7.25")
-        testImplementation("org.apache.logging.log4j:log4j-core:2.8.2")
-        testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.8.2")
-        testImplementation("org.spigotmc:spigot:1.16.3-R0.1-SNAPSHOT")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+        testImplementation("org.mockito:mockito-core:3.6.28")
+        testImplementation("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
     }
 
     tasks {
-        compileJava {
-            options.encoding = "UTF-8"
+        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+            kotlinOptions.jvmTarget = "11"
         }
-        javadoc {
-            options.encoding = "UTF-8"
-        }
-        compileKotlin {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        compileTestKotlin {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        // process yml
         processResources {
-            filesMatching("*.yml") {
+            filesMatching("**/*.yml") {
                 expand(project.properties)
             }
         }
@@ -78,8 +66,8 @@ subprojects {
             archiveVersion.set("")
 
             if (relocate) {
-                relocate("com.github.noonmaru.tap", "com.github.noonmaru.psychics.tap")
-                relocate("com.github.noonmaru.kommand", "com.github.noonmaru.psychics.kommand")
+                relocate("com.github.monun.tap", "com.github.monun.psychics.tap")
+                relocate("com.github.monun.kommand", "com.github.monun.psychics.kommand")
             }
         }
         assemble {
@@ -93,28 +81,43 @@ project(":psychics-common") {
 }
 
 tasks {
-    create<de.undercouch.gradle.tasks.download.Download>("downloadBuildTools") {
-        src("https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar")
-        dest(".buildtools/BuildTools.jar")
-    }
     create<DefaultTask>("setupWorkspace") {
         doLast {
-            for (v in listOf("1.16.3")) {
-                javaexec {
-                    workingDir(".buildtools/")
-                    main = "-jar"
-                    args = listOf(
-                        "./BuildTools.jar",
-                        "--rev",
-                        v
-                    )
-                }
-            }
-            File(".buildtools/").deleteRecursively()
-        }
+            val versions = arrayOf(
+                "1.16.5"
+            )
+            val buildtoolsDir = file(".buildtools")
+            val buildtools = File(buildtoolsDir, "BuildTools.jar")
 
-        dependsOn(named("downloadBuildTools"))
+            val maven = File(System.getProperty("user.home"), ".m2/repository/org/spigotmc/spigot/")
+            val repos = maven.listFiles { file: File -> file.isDirectory } ?: emptyArray()
+            val missingVersions = versions.filter { version ->
+                repos.find { it.name.startsWith(version) }?.also { println("Skip downloading spigot-$version") } == null
+            }.also { if (it.isEmpty()) return@doLast }
+
+            val download by registering(de.undercouch.gradle.tasks.download.Download::class) {
+                src("https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar")
+                dest(buildtools)
+            }
+            download.get().download()
+
+            runCatching {
+                for (v in missingVersions) {
+                    println("Downloading spigot-$v...")
+
+                    javaexec {
+                        workingDir(buildtoolsDir)
+                        main = "-jar"
+                        args = listOf("./${buildtools.name}", "--rev", v)
+                        // Silent
+                        standardOutput = OutputStream.nullOutputStream()
+                        errorOutput = OutputStream.nullOutputStream()
+                    }
+                }
+            }.onFailure {
+                it.printStackTrace()
+            }
+            buildtoolsDir.deleteRecursively()
+        }
     }
 }
-
-gradle.buildFinished { buildDir.deleteRecursively() }

@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - openjdk8
+  - openjdk11
 
 branches:
   only:
@@ -8,15 +8,15 @@ branches:
     - develop
 
 before_install:
-  - wget https://raw.githubusercontent.com/noonmaru/travis-ci-buildtools/master/buildtools.sh
-  - chmod +x buildtools.sh
-  - ./buildtools.sh 1.16.3
   - chmod +x ./gradlew
+
+install:
+  - ./gradlew setupWorkspace
 
 cache:
   directories:
-    - '$HOME/.m2'
-    - '$HOME/.gradle'
+    - $HOME/.m2
+    - $HOME/.gradle
 
 script:
   - ./gradlew clean test

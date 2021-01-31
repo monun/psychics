@@ -15,15 +15,15 @@ subprojects {
             from(shadowJar)
             into { File(parent!!.buildDir, "libs") }
         }
-        create<Copy>("copyShadowJarToDocker") {
-            from(shadowJar)
-            var dest = File(rootDir, ".docker/plugins/Psychics/abilities")
-            if (File(dest, shadowJar.get().archiveFileName.get()).exists()) dest = File(dest, "update")
-            into(dest)
-            doLast { println("${shadowJar.get().archiveFileName.get()} copied to ${dest.path}") }
-        }
         assemble {
             dependsOn(named("copyShadowJarToParent"))
+        }
+        create<Copy>("paper") {
+            from(shadowJar)
+            var dest = File(rootDir, ".paper/plugins/Psychics/abilities/")
+            // if plugin.jar exists in plugins change dest to plugins/update
+            if (File(dest, shadowJar.get().archiveFileName.get()).exists()) dest = File(dest, "update")
+            into(dest)
         }
     }
 }
