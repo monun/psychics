@@ -43,7 +43,7 @@ subprojects {
         compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
         compileOnly("com.github.monun:invfx:1.4.0")
 
-        implementationOnlyCommon("com.github.monun:tap:3.3.1")
+        implementationOnlyCommon("com.github.monun:tap:3.3.2")
         implementationOnlyCommon("com.github.monun:kommand:0.7.0")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
