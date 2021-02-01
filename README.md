@@ -21,5 +21,5 @@
   * InvFx = [InvFx Releases](https://github.com/monun/invfx/releases)
   * Kotlin Plugin = [Kotlin Plugin Releases](https://github.com/monun/kotlin-plugin/releases)
   * ProtocolLib = [ProtocolLib LastSuccessfulBuild](https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/target/ProtocolLib.jar)
-  * 위 의존성 플러그인을 설치하신 후 PaperMC 1.16.3 서버에서 플러그인을 넣고 구동하세요.
+  * 위 의존성 플러그인을 설치하신 후 PaperMC 1.16.5 서버에서 플러그인을 넣고 구동하세요.
   * 추가 플러그인 = [WorldEdit](https://dev.bukkit.org/projects/worldedit/files)
