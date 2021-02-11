@@ -11,16 +11,16 @@ subprojects {
         shadowJar {
             archiveBaseName.set("${project.group}.${project.name}")
         }
-        create<Copy>("copyShadowJarToParent") {
+        create<Copy>("copyToParent") {
             from(shadowJar)
             into { File(parent!!.buildDir, "libs") }
         }
         assemble {
-            dependsOn(named("copyShadowJarToParent"))
+            dependsOn(named("copyToParent"))
         }
-        create<Copy>("paper") {
+        create<Copy>("copyToServer") {
             from(shadowJar)
-            var dest = File(rootDir, ".paper/plugins/Psychics/abilities/")
+            var dest = File(rootDir, ".server/plugins/Psychics/abilities/")
             // if plugin.jar exists in plugins change dest to plugins/update
             if (File(dest, shadowJar.get().archiveFileName.get()).exists()) dest = File(dest, "update")
             into(dest)

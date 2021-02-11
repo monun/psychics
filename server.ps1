@@ -1,3 +1,6 @@
+# Powershell
+$TitlePrefix = "Paper"
+
 # Gradle
 $Build = $true
 
@@ -5,20 +8,23 @@ $Build = $true
 $Xms = "1G"
 $Xmx = "2G"
 $Debug = $true
-$Jar = "paper.jar"
+$ServerJar = "paper.jar"
 
-# Spigot
+# Server
 $Version = "1.16.5"
 
 # Plugins
-$Plugins = (
-    "https://github.com/monun/kotlin-plugin/releases/download/1.4.21/Kotlin.jar",
-    "https://github.com/monun/invfx/releases/download/1.4.0/InvFX.jar",
-    "https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/target/ProtocolLib.jar"
+$Plugins = @(
+"https://github.com/monun/kotlin-plugin/releases/latest/download/Kotlin-1.4.30.jar",
+"https://github.com/monun/invfx/releases/download/1.4.2/InvFX.jar",
+"https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/target/ProtocolLib.jar"
 )
 
-# Backup
+# Backup (7z)
 $AskBackup = $false
+
+# Run
+$ServerJarURL = "https://papermc.io/api/v1/paper/$Version/latest/download"
 
 Function Download-File
 {
@@ -156,13 +162,16 @@ function Choice
 
 Function Backup
 {
+    param(
+        [string]$ServerJar
+    )
     $Backup = "backup"
 
     Create-Directory $Backup
 
     $Date = Get-Date -Format "yyyy-MM-dd HHmmss"
     $ArchiveName = "$Backup/$Date.zip"
-    7z a -tzip $ArchiveName ./ "-xr!*.gz" "-x!paper.jar" "-x!paper.ps1" "-x!backup" "-x!cache" | Out-Null
+    7z a -tzip $ArchiveName ./ "-xr!*.gz" "-x!$ServerJar" "-x!backup" "-x!cache" | Out-Null
     Write-Host "Backup completed $ArchiveName"
 }
 
@@ -172,11 +181,11 @@ $Folder = ".$( (Get-Item($MyInvocation.MyCommand.Name)).BaseName )"
 # Setup
 Create-Directory $Folder
 Set-Location $Folder
-$host.UI.RawUI.WindowTitle = "paper $Version"
-Agree-EULA
+$host.UI.RawUI.WindowTitle = "$TitlePrefix $Version"
+Agree-EULA # alt -> -Dcom.mojang.eula.agree=true
 
-# Download paper
-Download-File "https://papermc.io/api/v1/paper/$Version/latest/download" "." $Jar
+# Download servver jar
+Download-File $ServerJarURL "." $ServerJar
 
 # Download plugins
 foreach ($Plugin in $Plugins)
@@ -196,7 +205,7 @@ if ($Debug)
 }
 
 [void]$JVMArgs.Add("-jar")
-[void]$JVMArgs.Add($Jar)
+[void]$JVMArgs.Add($ServerJar)
 [void]$JVMArgs.Add("--nogui")
 
 # Run
@@ -205,7 +214,7 @@ While ($true)
     if ($Build)
     {
         Set-Location $ProjectFolder
-        ./gradlew clean paper
+        ./gradlew clean copyToServer
         Set-Location $Folder
     }
 
@@ -217,11 +226,11 @@ While ($true)
 
         if ($SkipBackup -eq 'N')
         {
-            Backup
+            Backup $ServerJar
         }
     }
 
-    $Restart = Choice "Restart? [Y]es [N]o" @('Y', 'N') 'Y' 2
+    $Restart = Choice "Restart? [Y]es [N]o" @('Y', 'N') 'Y' 3
 
     if ($Restart -eq 'N')
     {

@@ -10,5 +10,5 @@ build/
 !gradle-wrapper.jar
 !gradle-wrapper.properties
 
-# Paper
-.paper/
+# Server
+.server/
