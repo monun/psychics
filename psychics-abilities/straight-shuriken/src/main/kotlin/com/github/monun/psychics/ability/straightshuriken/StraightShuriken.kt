@@ -184,7 +184,7 @@ class StraightShuriken : ActiveAbility<StraightShurikenConcept>() {
         override fun onTrail(trail: Trail) {
             trail.velocity?.let { velocity ->
                 val from = trail.from
-                val world = from.world
+                val world = from.world!!
                 val length = velocity.normalizeAndLength()
                 val filter = TargetFilter(esper.player)
 
@@ -230,7 +230,7 @@ class StraightShuriken : ActiveAbility<StraightShurikenConcept>() {
                     )
                 }
 
-                to.world.playSound(to, Sound.ENTITY_BLAZE_SHOOT, SoundCategory.MASTER, 0.25F, 1.8F + nextFloat() * 0.2F)
+                to.world!!.playSound(to, Sound.ENTITY_BLAZE_SHOOT, SoundCategory.MASTER, 0.25F, 1.8F + nextFloat() * 0.2F)
             }
         }
 
