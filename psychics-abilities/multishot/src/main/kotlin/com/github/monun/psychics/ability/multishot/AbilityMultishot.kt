@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.potion.PotionType
 import org.bukkit.util.Vector
+import java.util.*
 
 class AbilityMultishotConcept : AbilityConcept() {
     @Config
@@ -34,7 +35,7 @@ class AbilityMultishotConcept : AbilityConcept() {
     var arrowAngle = 2.5
 
     @Config
-    var damagePerPower = Damage(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.1))
+    var arrowDamage = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.5)
 
     init {
         type = AbilityType.ACTIVE
@@ -47,17 +48,18 @@ class AbilityMultishotConcept : AbilityConcept() {
         description = listOf(
             "활을 사용 시 추가로 화살을 발사합니다.",
             "화살은 적에게 적중 시 피격 후 무적시간을 무시하고",
-            "<damage>의 피해를 입힙니다.",
-            "힘 인챈트당 <damage-per-power>의 추가피해를 입힙니다."
+            "마인크래프트 화살 데미지 공식에 따라 최대",
+            "<arrow-damage>의 피해를 입힙니다."
         )
     }
 
     override fun onRenderTooltip(tooltip: TooltipBuilder, stats: (EsperStatistic) -> Double) {
-        tooltip.addTemplates("damage-per-power" to stats(damagePerPower.stats))
+        tooltip.addTemplates("arrow-damage" to stats(arrowDamage))
     }
 }
 
 class AbilityMultishot : Ability<AbilityMultishotConcept>(), Listener {
+
     override fun onEnable() {
         psychic.registerEvents(this)
     }
@@ -81,6 +83,16 @@ class AbilityMultishot : Ability<AbilityMultishotConcept>(), Listener {
     @EventHandler(ignoreCancelled = true)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         // TODO 데미지 계산식 추가
+        // 활시위 속도 0.3 - 3.0
+        // 활 데미지 기본 = 2.0 + 파워 3.0
+
+        val arrow = event.damager.also { if (it !is Arrow) return } as Arrow
+        val velocity = arrow.velocity
+        val speed = velocity.length()
+        val damage = esper.getStatistic(concept.arrowDamage)
+        val totalDamage = damage * speed / 3.0 * arrow.damage / 5.0
+
+        event.damage = totalDamage
     }
 
     @TargetEntity(EntityProvider.ProjectileHit.Shooter::class)
@@ -128,11 +140,16 @@ private fun Arrow.copyMetadata(origin: Arrow) {
         customEffects.forEach { addCustomEffect(it, false) }
     }
 
-    if (this is SpectralArrow && origin is SpectralArrow ) {
+    if (this is SpectralArrow && origin is SpectralArrow) {
         glowingTicks = origin.glowingTicks
     }
     shooter = origin.shooter
     damage = origin.damage
     pickupStatus = AbstractArrow.PickupStatus.CREATIVE_ONLY
     pierceLevel = origin.pierceLevel
+}
+
+private fun Arrow.multishotDamage(force: Float): Arrow {
+    this.damage *= force
+    return this
 }
