@@ -40,7 +40,7 @@ subprojects {
         compileOnly(kotlin("reflect"))
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
         compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
-        compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0-SNAPSHOT")
+        compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
         compileOnly("com.github.monun:invfx:1.4.+")
 
         implementationOnlyCommon("com.github.monun:tap:3.3.+")
