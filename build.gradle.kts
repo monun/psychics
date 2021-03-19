@@ -1,7 +1,7 @@
 import java.io.OutputStream
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.31"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     `maven-publish`
 }
@@ -41,10 +41,10 @@ subprojects {
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
         compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
         compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
-        compileOnly("com.github.monun:invfx:1.4.+")
+        compileOnly("com.github.monun:invfx:1.4.3")
 
-        implementationOnlyCommon("com.github.monun:tap:3.3.+")
-        implementationOnlyCommon("com.github.monun:kommand:0.7.+")
+        implementationOnlyCommon("com.github.monun:tap:3.4.0")
+        implementationOnlyCommon("com.github.monun:kommand:0.8.0")
 
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
@@ -82,6 +82,10 @@ project(":psychics-common") {
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
+
     create<DefaultTask>("setupWorkspace") {
         doLast {
             val versions = arrayOf(
