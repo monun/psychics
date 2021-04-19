@@ -34,10 +34,9 @@ class TargetFilter(
     override fun test(t: Entity): Boolean {
         if (t === player) return false
 
-        if (t is LivingEntity) {
+        if (t is LivingEntity && t.isValid && t.health > 0.0) {
             if (t is Player) {
                 val gameMode = t.gameMode
-
                 if (gameMode == GameMode.SPECTATOR || gameMode == GameMode.CREATIVE) return false
             }
 

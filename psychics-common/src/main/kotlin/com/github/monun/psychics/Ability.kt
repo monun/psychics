@@ -28,7 +28,6 @@ import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.md_5.bungee.api.ChatColor
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.LivingEntity
@@ -149,9 +148,9 @@ abstract class Ability<T : AbilityConcept> {
     }
 
     fun LivingEntity.psychicDamage(
-        damage: Damage,
+        damage: Damage = requireNotNull(concept.damage) { "Damage is not defined" },
         knockbackLocation: Location? = esper.player.location,
-        knockback: Double = 0.0
+        knockback: Double = concept.knockback
     ) {
         val type = damage.type
         val amount = esper.getStatistic(damage.stats)

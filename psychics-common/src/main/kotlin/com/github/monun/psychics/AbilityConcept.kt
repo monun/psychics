@@ -137,6 +137,12 @@ open class AbilityConcept {
         protected set
 
     /**
+     * 넉백
+     */
+    @Config(required = false)
+    var knockback = 0.0
+
+    /**
      * 치유량
      */
     @Config(required = false)
