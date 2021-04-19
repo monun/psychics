@@ -17,17 +17,13 @@
 
 package com.github.monun.psychics
 
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.format.NamedTextColor
 
 
 enum class AbilityType(
-    val color: ChatColor
+    val color: NamedTextColor
 ) {
-    PASSIVE(ChatColor.AQUA),
-    ACTIVE(ChatColor.RED),
-    TOGGLE(ChatColor.YELLOW);
-
-    override fun toString(): String {
-        return "$color$name"
-    }
+    PASSIVE(NamedTextColor.AQUA),
+    ACTIVE(NamedTextColor.RED),
+    TOGGLE(NamedTextColor.YELLOW);
 }

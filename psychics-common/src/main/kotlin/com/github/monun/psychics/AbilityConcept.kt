@@ -20,11 +20,16 @@ package com.github.monun.psychics
 import com.github.monun.psychics.attribute.EsperStatistic
 import com.github.monun.psychics.damage.Damage
 import com.github.monun.psychics.tooltip.TooltipBuilder
-import com.github.monun.psychics.tooltip.addStats
+import com.github.monun.psychics.tooltip.stats
+import com.github.monun.psychics.tooltip.template
 import com.github.monun.tap.config.*
-import com.github.monun.tap.template.renderTemplatesAll
 import com.google.common.collect.ImmutableList
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.BuildableComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.*
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.boss.BarColor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.inventory.ItemStack
@@ -76,7 +81,7 @@ open class AbilityConcept {
      */
     @Config(required = false)
     @RangeInt(min = 0)
-    var cooldownTicks = 0L
+    var cooldownTime = 0L
         protected set
 
     /**
@@ -92,7 +97,7 @@ open class AbilityConcept {
      */
     @Config(required = false)
     @RangeInt(min = 0)
-    var castingTicks = 0L
+    var castingTime = 0L
         protected set
 
     /**
@@ -113,7 +118,7 @@ open class AbilityConcept {
      * 지속 시간
      */
     @Config(required = false)
-    var durationTicks = 0L
+    var durationTime = 0L
         protected set
 
     /**
@@ -165,15 +170,10 @@ open class AbilityConcept {
             _supplyItems = ImmutableList.copyOf(value.map { it.clone() })
         }
 
-    /**
-     * 능력의 설명
-     * 템플릿을 사용 가능합니다.
-     * * $variable - Config의 값 활용하기
-     * * <variable> 능력 내부 템플릿 값 활용하기
-     */
-    @Config
-    var description: List<String> = ArrayList(0)
-        protected set
+    @Config("description")
+    private var descriptionRaw: List<String> = ArrayList(0)
+
+    var description: List<Component> = emptyList()
 
     internal fun initialize(
         name: String,
@@ -191,45 +191,61 @@ open class AbilityConcept {
             type = AbilityType.ACTIVE
         }
 
+        description = description.map { component ->
+            if (component is BuildableComponent<*, *>) {
+                component.toBuilder().colorIfAbsent(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false).build()
+            } else
+                component
+        }
+
+        val gson = GsonComponentSerializer.gson()
+        descriptionRaw = description.map { gson.serialize(it) }
+
         val ret = computeConfig(config, true)
 
-        this.description = ImmutableList.copyOf(description.renderTemplatesAll(config))
         this._supplyItems = ImmutableList.copyOf(_supplyItems)
+        this.description = descriptionRaw.map { gson.deserialize(it) }
 
         return ret
     }
 
-    internal fun renderTooltip(stats: (EsperStatistic) -> Double = { 0.0 }): TooltipBuilder {
+    internal fun renderTooltip(supplyStats: (EsperStatistic) -> Double = { 0.0 }): TooltipBuilder {
         val tooltip = TooltipBuilder().apply {
-            title = String.format("%s%s%-19s%s%19s", ChatColor.GOLD, ChatColor.BOLD, displayName, ChatColor.RESET, type)
-            addStats(ChatColor.GREEN, "필요 레벨", levelRequirement, "레벨")
-            addStats(ChatColor.AQUA, "재사용 대기시간", cooldownTicks / 20.0, "초")
-            addStats(ChatColor.DARK_AQUA, "마나 소모", cost)
-            addStats(ChatColor.BLUE, "${if (interruptible) "집중" else "시전"} 시간", castingTicks / 20.0, "초")
-            addStats(ChatColor.DARK_GREEN, "지속 시간", durationTicks / 20.0, "초")
-            addStats(ChatColor.LIGHT_PURPLE, "사거리", range, "블록")
-            addStats(ChatColor.WHITE, "치유량", "<healing>", healing)
-            addStats("damage", damage)
-            addDescription(description)
+            title(
+                text().decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
+                    .append(text().content(displayName).color(NamedTextColor.GOLD))
+                    .append(space())
+                    .append(text().content(type.name).color(type.color))
+                    .build()
+            )
+
+            stats(levelRequirement) { NamedTextColor.GREEN to "필요 레벨" to null }
+            stats(cooldownTime / 1000.0) { NamedTextColor.AQUA to "재사용 대기시간" to "초" }
+            stats(cost) { NamedTextColor.DARK_AQUA to "마나 소모" to null }
+            stats(castingTime / 1000.0) { NamedTextColor.BLUE to "${if (interruptible) "집중" else "시전"} 시간" to "초" }
+            stats(durationTime / 1000.0) { NamedTextColor.DARK_GREEN to "지속시간" to "초" }
+            stats(range) { NamedTextColor.LIGHT_PURPLE to "사거리" to "블록" }
+            stats(healing) { NamedTextColor.GREEN to "치유량" to "healing" }
+            stats(damage) { NamedTextColor.DARK_PURPLE to "damage" }
+
+            body(description)
 
             if (_supplyItems.isNotEmpty()) {
-                addFooter(ChatColor.DARK_GREEN to "클릭하여 능력 아이템을 지급받으세요.")
+                footer(text().content("클릭하여 아이템을 지급받으세요").color(NamedTextColor.DARK_GREEN).build())
             }
 
-            addTemplates(
-                "display-name" to displayName,
-                "level-requirement" to levelRequirement,
-                "cooldown-time" to cooldownTicks / 20.0,
-                "cost" to cost,
-                "casting-time" to castingTicks / 20.0,
-                "range" to range,
-                "duration" to durationTicks / 20.0
-            )
-            damage?.let { addTemplates("damage" to stats(it.stats)) }
-            healing?.let { addTemplates("healing" to stats(it)) }
+            template("display-name", displayName)
+            template("level-requirement", levelRequirement)
+            template("cooldown-time", cooldownTime / 1000.0)
+            template("cost", cost)
+            template("casting-time", castingTime / 1000.0)
+            template("range", range)
+            template("duration", durationTime / 1000.0)
+            template("damage", damage?.let { supplyStats(it.stats) } ?: 0.0)
+            template("healing", healing?.let { supplyStats(it) } ?: 0.0)
         }
 
-        runCatching { onRenderTooltip(tooltip, stats) }
+        runCatching { onRenderTooltip(tooltip, supplyStats) }
 
         return tooltip
     }

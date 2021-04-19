@@ -18,11 +18,18 @@
 package com.github.monun.psychics
 
 import com.github.monun.psychics.tooltip.TooltipBuilder
+import com.github.monun.psychics.tooltip.stats
+import com.github.monun.psychics.tooltip.template
 import com.github.monun.tap.config.Config
 import com.github.monun.tap.config.RangeDouble
 import com.github.monun.tap.config.computeConfig
 import com.google.common.collect.ImmutableList
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.BuildableComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.boss.BarColor
 import org.bukkit.configuration.ConfigurationSection
@@ -62,7 +69,7 @@ class PsychicConcept internal constructor() {
      */
     @Config
     @RangeDouble(min = 0.0, max = 32767.0)
-    var healthRegenPerTick = 0.0
+    var healthRegenPerSecond = 0.0
         private set
 
     /**
@@ -78,7 +85,7 @@ class PsychicConcept internal constructor() {
      */
     @Config
     @RangeDouble(min = 0.0, max = 32767.0)
-    var manaRegenPerTick = 0.0
+    var manaRegenPerSecond = 0.0
         private set
 
     /**
@@ -90,9 +97,12 @@ class PsychicConcept internal constructor() {
     /**
      * 설명
      */
-    @Config
-    var description: List<String> = ArrayList(0)
-        private set
+    @Config("description")
+    private var descriptionRaw: List<String> = ArrayList(0)
+
+    private var description: List<Component> = listOf(
+        text("설명")
+    )
 
     /**
      * 능력 목록
@@ -103,6 +113,16 @@ class PsychicConcept internal constructor() {
     internal fun initialize(name: String, config: ConfigurationSection): Boolean {
         this.name = name
         this.displayName = name
+
+        description = description.map { component ->
+            if (component is BuildableComponent<*, *>) {
+                component.toBuilder().colorIfAbsent(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false).build()
+            } else
+                component
+        }
+
+        val gson = GsonComponentSerializer.gson()
+        descriptionRaw = description.map { gson.serialize(it) }
 
         val ret = computeConfig(config)
 
@@ -126,20 +146,23 @@ class PsychicConcept internal constructor() {
 
     internal fun renderTooltip(): TooltipBuilder {
         return TooltipBuilder().apply {
-            title = "${ChatColor.GOLD}${ChatColor.BOLD}$displayName${ChatColor.RESET}"
-            addStats(ChatColor.RED, "추가 체력", healthBonus)
-            addStats(ChatColor.DARK_RED, "체력 재생", healthRegenPerTick * 20.0)
-            addStats(ChatColor.AQUA, "마나", mana)
-            addStats(ChatColor.DARK_AQUA, "마나 재생", manaRegenPerTick * 20.0)
-            addDescription(description)
-
-            addTemplates(
-                DISPLAY_NAME to displayName,
-                HEALTH_BONUS to healthBonus,
-                HEALTH_REGEN to healthRegenPerTick * 20.0,
-                MANA to mana,
-                MANA_REGEN to manaRegenPerTick * 20.0
+            title(
+                text().content(displayName).decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
+                    .color(NamedTextColor.GOLD).build()
             )
+
+            stats(healthBonus) { NamedTextColor.RED to "추가체력" to null }
+            stats(healthRegenPerSecond) { NamedTextColor.DARK_RED to "체력재생" to null }
+            stats(mana) { NamedTextColor.AQUA to "마나" to null }
+            stats(manaRegenPerSecond) { NamedTextColor.DARK_AQUA to "마나재생" to null }
+
+            body(description)
+
+            template(DISPLAY_NAME, displayName)
+            template(HEALTH_BONUS, healthBonus)
+            template(HEALTH_REGEN, healthRegenPerSecond)
+            template(MANA, mana)
+            template(MANA_REGEN, manaRegenPerSecond)
         }
     }
 

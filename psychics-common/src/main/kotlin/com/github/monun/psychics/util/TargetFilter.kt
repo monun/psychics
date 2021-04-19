@@ -54,3 +54,7 @@ class TargetFilter(
         hostile = false
     }
 }
+
+fun Player.friendlyFilter() = TargetFilter(this).apply { friendly() }
+
+fun Player.hostileFilter() = TargetFilter(this)

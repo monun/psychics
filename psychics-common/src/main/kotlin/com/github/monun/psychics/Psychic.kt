@@ -18,13 +18,13 @@
 package com.github.monun.psychics
 
 import com.github.monun.psychics.plugin.PsychicPlugin
-import com.github.monun.psychics.task.TickScheduler
-import com.github.monun.psychics.task.TickTask
-import com.github.monun.psychics.util.Tick
+import com.github.monun.psychics.util.Times
 import com.github.monun.tap.event.RegisteredEntityListener
 import com.github.monun.tap.fake.FakeEntity
 import com.github.monun.tap.fake.FakeProjectileManager
 import com.github.monun.tap.ref.UpstreamReference
+import com.github.monun.tap.task.Ticker
+import com.github.monun.tap.task.TickerTask
 import com.google.common.collect.ImmutableList
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -68,9 +68,11 @@ class Psychic internal constructor(
         }
 
     /**
-     * 능력이 활성화된 tick입니다.
+     * 능력이 활성화된 시간입니다.
+     *
+     * 단위 = millis
      */
-    var ticks = 0L
+    var times = 0L
         private set
 
     /**
@@ -124,15 +126,15 @@ class Psychic internal constructor(
 
     private lateinit var castingBar: BossBar
 
-    private lateinit var scheduler: TickScheduler
+    private lateinit var ticker: Ticker
 
-    private lateinit var projectileManager: FakeProjectileManager
+    private lateinit var projectiles: FakeProjectileManager
 
     private lateinit var listeners: ArrayList<RegisteredEntityListener>
 
     private lateinit var fakeEntities: MutableSet<FakeEntity>
 
-    private var prevUpdateTicks = 0L
+    private var prevUpdateTime = 0L
 
     init {
         abilities = ImmutableList.copyOf(concept.abilityConcepts.map { concept ->
@@ -160,8 +162,8 @@ class Psychic internal constructor(
             addPlayer(player)
             isVisible = false
         }
-        scheduler = TickScheduler()
-        projectileManager = FakeProjectileManager()
+        ticker = Ticker.precision()
+        projectiles = FakeProjectileManager()
         listeners = arrayListOf()
         fakeEntities = Collections.newSetFromMap(WeakHashMap<FakeEntity, Boolean>())
 
@@ -185,7 +187,7 @@ class Psychic internal constructor(
 
         for (ability in abilities) {
             ability.runCatching {
-                cooldownTicks = 0
+                cooldownTime = 0L
                 onDetach()
             }.onFailure(Throwable::printStackTrace)
         }
@@ -194,7 +196,7 @@ class Psychic internal constructor(
 
     private fun onEnable() {
         isEnabled = true
-        prevUpdateTicks = Tick.currentTicks
+        prevUpdateTime = Times.current
 
         for (ability in abilities) {
             ability.runCatching { onEnable() }.onFailure(Throwable::printStackTrace)
@@ -203,8 +205,8 @@ class Psychic internal constructor(
 
     private fun onDisable() {
         castingBar.isVisible = false
-        scheduler.cancelAll()
-        projectileManager.clear()
+        //TODO 모두 캔슬 ticker.cancelAll
+        projectiles.clear()
         listeners.run {
             for (registeredEntityListener in this) {
                 registeredEntityListener.unregister()
@@ -217,7 +219,6 @@ class Psychic internal constructor(
             }
             clear()
         }
-
         for (ability in abilities) {
             ability.runCatching { onDisable() }.onFailure(Throwable::printStackTrace)
         }
@@ -236,7 +237,7 @@ class Psychic internal constructor(
     companion object {
         internal const val NAME = "name"
         private const val MANA = "mana"
-        private const val TICKS = "ticks"
+        private const val TIMES = "time"
         private const val ENABLED = "enabled"
         private const val ABILITIES = "abilities"
     }
@@ -244,7 +245,7 @@ class Psychic internal constructor(
     internal fun save(config: ConfigurationSection) {
         config[NAME] = concept.name
         config[MANA] = mana
-        config[TICKS] = ticks
+        config[TIMES] = times
         config[ENABLED] = isEnabled
 
         val abilitiesSection = config.createSection(ABILITIES)
@@ -259,7 +260,7 @@ class Psychic internal constructor(
 
     internal fun load(config: ConfigurationSection) {
         mana = config.getDouble(MANA).coerceIn(0.0, concept.mana)
-        ticks = max(0, config.getLong(TICKS))
+        times = max(0L, config.getLong(TIMES))
 
         config.getConfigurationSection(ABILITIES)?.let { abilitiesSection ->
             for (ability in abilities) {
@@ -296,11 +297,11 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun runTask(runnable: Runnable, delay: Long): TickTask {
+    fun runTask(runnable: Runnable, delay: Long): TickerTask {
         checkState()
         checkEnabled()
 
-        return scheduler.runTask(runnable, delay)
+        return ticker.runTask(runnable, delay)
     }
 
     /**
@@ -311,11 +312,11 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun runTaskTimer(runnable: Runnable, delay: Long, period: Long): TickTask {
+    fun runTaskTimer(runnable: Runnable, delay: Long, period: Long): TickerTask {
         checkState()
         checkEnabled()
 
-        return scheduler.runTaskTimer(runnable, delay, period)
+        return ticker.runTaskTimer(runnable, delay, period)
     }
 
     /**
@@ -348,7 +349,7 @@ class Psychic internal constructor(
         checkEnabled()
 
         projectile.psychic = this
-        projectileManager.launch(location, projectile)
+        projectiles.launch(location, projectile)
     }
 
     /**
@@ -408,12 +409,12 @@ class Psychic internal constructor(
         ability: ActiveAbility<*>,
         event: PlayerEvent,
         wandAction: ActiveAbility.WandAction,
-        castingTicks: Long,
+        castingTime: Long,
         target: Any?
     ) {
         interruptChannel()
 
-        channeling = Channel(ability, event, wandAction, castingTicks, target)
+        channeling = Channel(ability, event, wandAction, castingTime, target)
         castingBar.apply {
             val abilityConcept = ability.concept
             setTitle("${ChatColor.BOLD}${concept.displayName}")
@@ -440,23 +441,23 @@ class Psychic internal constructor(
     }
 
     internal fun update() {
-        val currentTicks = Tick.currentTicks
-        val elapsedTicks = currentTicks - prevUpdateTicks
-        prevUpdateTicks = currentTicks
-        ticks += elapsedTicks
+        val currentTime = Times.current
+        val elapsedTime = currentTime - prevUpdateTime
+        prevUpdateTime = currentTime
+        times += elapsedTime
 
-        regenMana(elapsedTicks)
-        regenHealth(elapsedTicks)
+        regenMana(elapsedTime)
+        regenHealth(elapsedTime)
 
-        scheduler.run()
-        projectileManager.update()
+        ticker.run()
+        projectiles.update()
 
         channeling?.let { channel ->
-            val remainTicks = channel.remainingTicks
+            val remainingTime = channel.remainingTime
 
-            castingBar.progress = 1.0 - remainTicks.toDouble() / channel.ability.concept.castingTicks.toDouble()
+            castingBar.progress = 1.0 - remainingTime.toDouble() / channel.ability.concept.castingTime.toDouble()
 
-            if (remainTicks > 0) {
+            if (remainingTime > 0L) {
                 channel.channel()
             } else {
                 castingBar.setTitle(null)
@@ -467,18 +468,18 @@ class Psychic internal constructor(
         }
     }
 
-    private fun regenMana(elapsedTicks: Long) {
-        mana = (mana + concept.manaRegenPerTick * elapsedTicks).coerceIn(0.0, concept.mana)
+    private fun regenMana(elapsedTime: Long) {
+        mana = (mana + concept.manaRegenPerSecond * (elapsedTime / 1000.0)).coerceIn(0.0, concept.mana)
     }
 
-    private fun regenHealth(elapsedTicks: Long) {
+    private fun regenHealth(elapsedTime: Long) {
         val player = esper.player
         val health = player.health
 
         if (health > 0.0) {
             val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
             player.health =
-                (player.health + concept.healthRegenPerTick * elapsedTicks).coerceIn(
+                (player.health + concept.healthRegenPerSecond * (elapsedTime / 1000.0)).coerceIn(
                     0.0,
                     maxHealth
                 )
@@ -511,16 +512,16 @@ class Channel internal constructor(
     val ability: ActiveAbility<*>,
     val event: PlayerEvent,
     val action: ActiveAbility.WandAction,
-    castingTicks: Long,
+    castingTime: Long,
     val target: Any? = null
 ) {
-    private val channelTick = Tick.currentTicks + castingTicks
+    private val channelTime = Times.current + castingTime
 
     /**
      * 시전까지 남은시간
      */
-    val remainingTicks
-        get() = max(0, channelTick - Tick.currentTicks)
+    val remainingTime
+        get() = max(0, channelTime - Times.current)
 
     internal fun channel() {
         ability.runCatching { onChannel(this@Channel) }.onFailure(Throwable::printStackTrace)

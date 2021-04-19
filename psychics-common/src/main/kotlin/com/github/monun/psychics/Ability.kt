@@ -19,9 +19,15 @@ package com.github.monun.psychics
 
 import com.github.monun.psychics.damage.Damage
 import com.github.monun.psychics.damage.psychicDamage
+import com.github.monun.psychics.format.decimalFormat
 import com.github.monun.psychics.util.TargetFilter
-import com.github.monun.psychics.util.Tick
+import com.github.monun.psychics.util.Times
 import com.github.monun.tap.ref.UpstreamReference
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -34,20 +40,20 @@ abstract class Ability<T : AbilityConcept> {
     lateinit var concept: T
         private set
 
-    var cooldownTicks: Long = 0L
+    var cooldownTime: Long = 0L
         get() {
-            return max(0L, field - Tick.currentTicks)
+            return max(0L, field - Times.current)
         }
         set(value) {
             checkState()
 
-            val ticks = max(0L, value)
-            field = Tick.currentTicks + ticks
+            val times = max(0L, value)
+            field = Times.current + times
 
-            val wand = concept.internalWand
+            val wand = concept.wand
 
             if (wand != null) {
-                esper.player.setCooldown(wand.type, ticks.toInt())
+                esper.player.setCooldown(wand.type, (times / 50L).toInt())
             }
         }
 
@@ -73,14 +79,14 @@ abstract class Ability<T : AbilityConcept> {
 
         if (!psychic.isEnabled) return TestResult.FAILED_DISABLED
         if (esper.player.level < concept.levelRequirement) return TestResult.FAILED_LEVEL
-        if (cooldownTicks > 0L) return TestResult.FAILED_COOLDOWN
+        if (cooldownTime > 0L) return TestResult.FAILED_COOLDOWN
         if (psychic.mana < concept.cost) return TestResult.FAILED_COST
 
         return TestResult.SUCCESS
     }
 
     internal fun save(config: ConfigurationSection) {
-        config[COOLDOWN_TICKS] = cooldownTicks
+        config[COOLDOWN_TIME] = cooldownTime
 
         runCatching {
             onSave(config)
@@ -88,7 +94,7 @@ abstract class Ability<T : AbilityConcept> {
     }
 
     internal fun load(config: ConfigurationSection) {
-        cooldownTicks = max(0L, config.getLong(COOLDOWN_TICKS))
+        cooldownTime = max(0L, config.getLong(COOLDOWN_TIME))
 
         runCatching {
             onLoad(config)
@@ -96,7 +102,7 @@ abstract class Ability<T : AbilityConcept> {
     }
 
     companion object {
-        private const val COOLDOWN_TICKS = "cooldown-ticks"
+        private const val COOLDOWN_TIME = "cooldown-time"
     }
 
     /**
@@ -166,7 +172,7 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
     open fun tryCast(
         event: PlayerEvent,
         action: WandAction,
-        castingTicks: Long = concept.castingTicks,
+        castingTime: Long = concept.castingTime,
         cost: Double = concept.cost,
         targeter: (() -> Any?)? = this.targeter
     ): TestResult {
@@ -180,7 +186,7 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
             }
 
             return if (psychic.mana >= concept.cost) {
-                cast(event, action, castingTicks, target)
+                cast(event, action, castingTime, target)
                 TestResult.SUCCESS
             } else {
                 TestResult.FAILED_COST
@@ -193,13 +199,13 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
     protected fun cast(
         event: PlayerEvent,
         action: WandAction,
-        castingTicks: Long,
+        castingTime: Long,
         target: Any? = null
     ) {
         checkState()
 
-        if (castingTicks > 0) {
-            psychic.startChannel(this, event, action, castingTicks, target)
+        if (castingTime > 0) {
+            psychic.startChannel(this, event, action, castingTime, target)
         } else {
             onCast(event, action, target)
         }
@@ -221,33 +227,52 @@ fun Ability<*>.targetFilter(): TargetFilter {
     return TargetFilter(esper.player)
 }
 
-class TestResult private constructor(
-    val message: String,
-    val messageFormatter: ((message: String, ability: Ability<*>) -> String)?
-) {
-    companion object {
-        val SUCCESS = create("성공")
-        val FAILED_LEVEL = create("${ChatColor.BOLD}레벨이 부족합니다") { message, ability ->
-            "$message ${ChatColor.RESET}(${ability.concept.levelRequirement}${ChatColor.BOLD}레벨)"
-        }
-        val FAILED_DISABLED = create("${ChatColor.BOLD}능력을 사용 할 수 없습니다.")
-        val FAILED_COOLDOWN = create("${ChatColor.BOLD}아직 준비되지 않았습니다.") { message, ability ->
-            "$message ${ChatColor.RESET}(${(ability.cooldownTicks + 19) / 20}${ChatColor.BOLD}초)"
-        }
-        val FAILED_COST = create("${ChatColor.BOLD}마나가 부족합니다.") { message, ability ->
-            "$message ${ChatColor.RESET}(${ability.concept.cost.toInt()})"
-        }
-        val FAILED_TARGET = create("${ChatColor.BOLD}대상 혹은 위치가 지정되지 않았습니다.")
-        val FAILED_CHANNEL = create("${ChatColor.BOLD}시전중인 스킬이 있습니다.")
-
-        fun create(message: String, formatter: ((message: String, ability: Ability<*>) -> String)? = null): TestResult {
-            return TestResult(message, formatter)
-        }
+sealed class TestResult {
+    object SUCCESS : TestResult() {
+        override fun message(ability: Ability<*>) = text("성공")
     }
 
-    fun getMessage(ability: Ability<*>): String {
-        val formatter = messageFormatter ?: return message
-
-        return formatter.invoke(message, ability)
+    object FAILED_LEVEL : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("레벨이 부족합니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                .append(space())
+                .append(text(ability.concept.levelRequirement))
+                .append(text().content("레벨"))
+                .build()
     }
+
+    object FAILED_DISABLED : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("능력을 사용 할 수 없습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD).build()
+    }
+
+    object FAILED_COOLDOWN : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("아직 준비되지 않았습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                .append(space())
+                .append(text((ability.cooldownTime + 999) / 1000))
+                .append(text("초"))
+                .build()
+    }
+
+    object FAILED_COST : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("마나가 부족합니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                .append(space())
+                .append(text(ability.concept.cost.decimalFormat()))
+                .build()
+    }
+
+    object FAILED_TARGET : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("대상 혹은 위치가 지정되지 않았습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                .build()
+    }
+
+    object FAILED_CHANNEL : TestResult() {
+        override fun message(ability: Ability<*>) =
+            text().content("시전중인 스킬이 있습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD).build()
+    }
+
+    abstract fun message(ability: Ability<*>): Component
 }

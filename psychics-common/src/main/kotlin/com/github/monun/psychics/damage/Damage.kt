@@ -18,6 +18,7 @@
 package com.github.monun.psychics.damage
 
 import com.github.monun.psychics.attribute.EsperStatistic
+import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.serialization.ConfigurationSerializable

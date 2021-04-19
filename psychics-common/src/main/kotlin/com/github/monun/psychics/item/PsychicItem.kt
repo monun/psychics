@@ -1,48 +1,50 @@
 package com.github.monun.psychics.item
 
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
 object PsychicItem {
-    val boundTag = "${ChatColor.RED}${ChatColor.BOLD}Psychicbound"
+    val boundTag =
+        text().content("Psychicbound").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
+            .color(NamedTextColor.RED).build()
 }
 
-var ItemStack.isPsychicbound
-    get() = itemMeta?.lore?.let { PsychicItem.boundTag in it } ?: false
+var ItemStack.isPsychicbound: Boolean
+    get() = lore()?.let { PsychicItem.boundTag in it } ?: false
     set(value) {
         val meta = itemMeta
-        val lore = meta.lore ?: ArrayList<String>(1)
+        val lore = meta.lore() ?: emptyList()
 
         if (value) {
-            if (PsychicItem.boundTag !in lore) {
-                lore.add(PsychicItem.boundTag)
-                meta.lore = lore
-                itemMeta = meta
-            }
+            if (PsychicItem.boundTag in lore) return
+
+            meta.lore(lore.toMutableList().apply { add(PsychicItem.boundTag) })
         } else {
-            if (lore.remove(PsychicItem.boundTag)) {
-                meta.lore = lore
-                itemMeta = meta
-            }
+            val i = lore.indexOf(PsychicItem.boundTag); if (i == -1) return
+
+            meta.lore(lore.toMutableList().apply { removeAt(i) })
         }
+
+        itemMeta = meta
     }
 
 var ItemMeta.isPsychicbound
-    get() = lore?.let { PsychicItem.boundTag in it } ?: false
+    get() = lore()?.let { PsychicItem.boundTag in it } ?: false
     set(value) {
-        val lore = lore ?: ArrayList<String>(1)
+        val lore = lore() ?: emptyList()
 
         if (value) {
-            if (PsychicItem.boundTag !in lore) {
-                lore.add(PsychicItem.boundTag)
-                this.lore = lore
-            }
+            if (PsychicItem.boundTag in lore) return
+
+            lore(lore.toMutableList().apply { add(PsychicItem.boundTag) })
         } else {
-            if (lore.remove(PsychicItem.boundTag)) {
-                this.lore = lore
-            }
+            val i = lore.indexOf(PsychicItem.boundTag); if (i == -1) return
+
+            lore(lore.toMutableList().apply { removeAt(i) })
         }
     }
 
@@ -73,5 +75,5 @@ private fun ItemStack.isSimilarLore(other: ItemStack): Boolean {
     val meta = itemMeta
     val otherMeta = other.itemMeta
 
-    return type == other.type && data == other.data && meta.displayName == itemMeta.displayName && meta.lore == otherMeta.lore
+    return type == other.type && data == other.data && meta.displayName() == itemMeta.displayName() && meta.lore() == otherMeta.lore()
 }

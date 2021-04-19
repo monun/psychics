@@ -18,6 +18,8 @@
 package com.github.monun.psychics.attribute
 
 import com.github.monun.psychics.format.decimalFormat
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import java.util.*
@@ -45,6 +47,16 @@ class EsperStatistic internal constructor(pairs: List<Pair<EsperAttribute, Doubl
         }
 
         return builder.toString()
+    }
+
+    fun toComponent(): Component {
+        val builder = text()
+
+        for ((attr, ratio) in stats) {
+            builder.append(text().color(attr.color).content("(${ratio.decimalFormat()}${attr.abbr})"))
+        }
+
+        return builder.build()
     }
 
     override fun serialize(): Map<String, Any> {

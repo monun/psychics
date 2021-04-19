@@ -137,7 +137,7 @@ private fun Psychic.castByWand(event: PlayerEvent, action: ActiveAbility.WandAct
             val result = ability.tryCast(event, action)
 
             if (result !== TestResult.SUCCESS) {
-                esper.player.sendActionBar(result.getMessage(ability))
+                esper.player.sendActionBar(result.message(ability))
             }
         }
     }

@@ -20,141 +20,169 @@ package com.github.monun.psychics.tooltip
 import com.github.monun.psychics.attribute.EsperStatistic
 import com.github.monun.psychics.damage.Damage
 import com.github.monun.psychics.format.decimalFormat
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.BuildableComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.*
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.ItemStack
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TooltipBuilder {
-    var title: String? = null
-    private val stats = ArrayList<Triple<ChatColor, String, String>>()
-    private val description = ArrayList<String>()
-    private val footers = ArrayList<Pair<ChatColor, String>>()
-    private val templates = HashMap<String, String>()
+    private var title: Component? = null
+    private val headers = ArrayList<Component>()
+    private val body = ArrayList<Component>()
+    private val footers = ArrayList<Component>()
 
-    fun addStats(color: ChatColor, name: String, value: String?) {
-        if (value == null) return
+    private val templates = TreeMap<String, TextComponent.Builder.() -> Unit>(naturalOrder())
 
-        stats += Triple(color, name, value)
+    fun title(component: Component) {
+        title = component
     }
 
-    fun addStats(color: ChatColor, name: String, value: Number?, suffix: String? = null) {
-        if (value == null || value.toDouble() == 0.0) return
+    fun header(component: Component) = headers.add(component)
 
-        if (suffix == null)
-            addStats(color, name, value.decimalFormat())
-        else
-            addStats(color, name, "${value.decimalFormat()}$suffix")
+    fun body(component: Component) = body.add(component)
+
+    fun body(components: Collection<Component>) = body.addAll(components)
+
+    fun footer(component: Component) = footers.add(component)
+
+    fun template(name: String, applier: TextComponent.Builder.() -> Unit) {
+        require(name.matches(Regex("[\\w\\-_]+"))) { "Template name cannot contain special characters" }
+        require(name !in this.templates) { "Template name already in use" }
+
+        templates[name] = applier
     }
 
-    fun addStats(color: ChatColor, name: String, value: Any?) {
-        if (value == null) return
-
-        addStats(color, name, value.toString())
-    }
-
-    fun addDescription(c: Collection<String>) {
-        description.addAll(c)
-    }
-
-    fun addFooter(footer: Pair<ChatColor, String>) {
-        this.footers += footer
-    }
-
-    fun addTemplates(vararg templates: Pair<String, Any>) {
-        for (template in templates) {
-            val name = template.first
-            require(name !in this.templates) { "Template name $name already in use" }
-        }
-
-        templates.forEach {
-            val value = it.second
-
-            val template = if (value is Number) value.decimalFormat() else value.toString()
-
-            this.templates[it.first] = template
-        }
-    }
-
-    fun toLore(includeTitle: Boolean = true): List<String> {
-        val stats = stats
-        val description = description
+    fun build(includeTitle: Boolean = true): List<Component> {
+        val headers = headers
+        val body = body
         val footers = footers
-        val lore = ArrayList<String>()
 
-        if (includeTitle) title?.let { lore += "$it${ChatColor.WHITE}" }
+        val components = ArrayList<Component>()
 
-        if (stats.isNotEmpty()) {
-            for ((color, name, value) in stats) {
-                lore += "${color}${ChatColor.BOLD}$name${ChatColor.WHITE}  $value${ChatColor.WHITE}"
+        if (includeTitle) {
+            title?.let { components += it }
+        }
+
+        components.addAllIfNotEmpty(headers) { add(empty()) }
+        components.addAllIfNotEmpty(body) { add(empty()) }
+        components.addAllIfNotEmpty(footers) { add(empty()) }
+
+        components.replaceAll { component ->
+            if (component is BuildableComponent<*, *>) {
+                component.toBuilder().applyDeep {
+                    if (it is TextComponent.Builder) {
+                        val content = it.content()
+
+                        if (content.matches(Regex("^<[\\w\\-_]+>$"))) {
+                            val name = content.substring(1, content.count() - 1)
+
+                            templates[name]?.let { template ->
+                                template(it)
+                            }
+                        }
+                    }
+                }.build()
+            } else {
+                component
             }
         }
 
-        if (description.isNotEmpty()) {
-            lore += ""
-            lore.addAll(description.map { "${ChatColor.GRAY}$it" })
-        }
-
-        if (footers.isNotEmpty()) {
-            lore += ""
-            lore.addAll(footers.map { (color, text) -> "$color$text" })
-        }
-
-        return lore.map { it.renderTemplates(templates::get) }
+        return components
     }
 
-    fun toItemStack(origin: ItemStack): ItemStack {
-        return origin.clone().apply {
-            itemMeta = itemMeta.apply {
-                setDisplayName(title.toString())
-                lore = toLore(false)
-            }
+    fun applyTo(item: ItemStack): ItemStack {
+        item.itemMeta = item.itemMeta.apply {
+            title?.let { displayName(it) }
+            lore(build(false))
         }
-    }
 
-    override fun toString(): String {
-        return toLore().joinToString("\n")
+        return item
     }
 }
 
-fun TooltipBuilder.addStats(color: ChatColor, name: String, template: String, statistics: EsperStatistic?) {
-    if (statistics == null) return
-
-    addStats(color, name, "$template$statistics")
+private fun <T> MutableList<T>.addAllIfNotEmpty(c: Collection<T>, onAdd: MutableList<T>.() -> Unit) {
+    if (c.isNotEmpty()) {
+        onAdd()
+        addAll(c)
+    }
 }
 
-fun TooltipBuilder.addStats(template: String, damage: Damage?) {
+fun TooltipBuilder.stats(color: TextColor, name: String, value: String, unit: String? = null) {
+    header(
+        text().decoration(TextDecoration.ITALIC, false)
+            .append(text().color(color).decorate(TextDecoration.BOLD).content(name))
+            .append(space())
+            .append(text().color(NamedTextColor.WHITE).content(value)).also {
+                if (unit != null) {
+                    it.append(space())
+                        .append(text().content(unit).color(NamedTextColor.WHITE))
+                }
+            }.build()
+    )
+}
+
+fun TooltipBuilder.stats(value: Number, deco: () -> Pair<Pair<TextColor, String>, String?>) {
+    if (value.toDouble() == 0.0) return
+
+    val pair = deco()
+    val first = pair.first
+    val color = first.first
+    val name = first.second
+    val unit = pair.second
+
+    stats(color, name, value.decimalFormat(), unit)
+}
+
+fun TooltipBuilder.stats(stats: EsperStatistic?, deco: () -> Pair<Pair<TextColor, String>, String>) {
+    if (stats == null) return
+
+    val pair = deco()
+    val first = pair.first
+    val color = first.first
+    val name = first.second
+    val template = pair.second
+
+    header(
+        text().decoration(TextDecoration.ITALIC, false)
+            .append(text().content(name).color(color).decorate(TextDecoration.BOLD))
+            .append(space())
+            .append(text("<$template>"))
+            .append(stats.toComponent())
+            .build()
+    )
+}
+
+fun TooltipBuilder.stats(damage: Damage?, deco: () -> Pair<TextColor, String>) {
     if (damage == null) return
 
-    addStats(ChatColor.DARK_PURPLE, damage.type.i18Name, "<$template>${damage.stats}")
+    val pair = deco()
+    val color = pair.first
+    val template = pair.second
+
+    header(
+        text().decoration(TextDecoration.ITALIC, false)
+            .append(text().content(damage.type.i18Name).color(color).decorate(TextDecoration.BOLD))
+            .append(space())
+            .append(text().content("<$template>").color(NamedTextColor.WHITE))
+            .append(damage.stats.toComponent())
+            .build()
+    )
 }
 
-fun String.renderTemplates(renderer: (name: String) -> String?): String {
-    val builder = StringBuilder(this)
-    builder.renderTemplates(0, renderer)
-
-    return builder.toString()
-}
-
-private fun StringBuilder.renderTemplates(startIndex: Int, renderer: (name: String) -> String?): Int {
-    var left = startIndex
-
-    while (left < count()) {
-        val c = this[left]
-
-        if (c == '<') {
-            val right = renderTemplates(left + 1, renderer)
-
-            if (left < right) {
-                val name = substring(left + 1, right)
-                val value = renderer(name) ?: "NULL"
-                require(!value.contains(Regex("[<>]"))) { "Rendered string cannot contains < or >" }
-
-                replace(left, right + 1, value)
-            }
-        } else if (c == '>')
-            return left
-
-        left++
+fun TooltipBuilder.template(name: String, value: String) {
+    template(name) {
+        content(value)
     }
+}
 
-    return -1
+fun TooltipBuilder.template(name: String, value: Number) {
+    template(name) {
+        content(value.decimalFormat())
+    }
 }

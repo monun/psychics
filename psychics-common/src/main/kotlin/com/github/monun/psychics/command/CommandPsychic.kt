@@ -33,6 +33,7 @@ import com.github.monun.psychics.invfx.InvPsychic
 import com.github.monun.psychics.item.addItemNonDuplicate
 import com.github.monun.psychics.plugin.PsychicPlugin
 import com.github.monun.tap.util.updateFromGitHubMagically
+import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -99,7 +100,8 @@ internal object CommandPsychic {
             then("reload") {
                 executes {
                     plugin.reloadPsychics()
-                    Bukkit.broadcast("${ChatColor.GREEN}Psychics reload complete.", "psychics.reload")
+
+                    Bukkit.broadcast(text("${ChatColor.GREEN}Psychics reload complete."), "psychics.reload")
                 }
             }
         }

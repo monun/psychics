@@ -18,19 +18,19 @@
 package com.github.monun.psychics.attribute
 
 import com.google.common.collect.ImmutableSortedMap
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.format.NamedTextColor
 import java.util.*
 
 enum class EsperAttribute(
     val abbr: String,
     val i18DisplayName: String,
-    val color: ChatColor
+    val color: NamedTextColor
 ) {
-    ATTACK_DAMAGE("ATK", "공격력", ChatColor.GOLD),
-    LEVEL("LVL", "레벨", ChatColor.GREEN),
-    DEFENSE("DEF", "방어", ChatColor.WHITE),
-    HEALTH("HP", "체력", ChatColor.RED),
-    MANA("MP", "마나", ChatColor.AQUA);
+    ATTACK_DAMAGE("ATK", "공격력", NamedTextColor.GOLD),
+    LEVEL("LVL", "레벨", NamedTextColor.GREEN),
+    DEFENSE("DEF", "방어", NamedTextColor.WHITE),
+    HEALTH("HP", "체력", NamedTextColor.RED),
+    MANA("MP", "마나", NamedTextColor.AQUA);
 
     companion object {
         val byAbbr: Map<String, EsperAttribute>
