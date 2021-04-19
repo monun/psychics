@@ -205,7 +205,7 @@ class Psychic internal constructor(
 
     private fun onDisable() {
         castingBar.isVisible = false
-        //TODO 모두 캔슬 ticker.cancelAll
+        ticker.cancelAll()
         projectiles.clear()
         listeners.run {
             for (registeredEntityListener in this) {
