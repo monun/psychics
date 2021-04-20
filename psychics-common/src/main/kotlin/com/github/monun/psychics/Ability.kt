@@ -26,7 +26,6 @@ import com.github.monun.tap.ref.UpstreamReference
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -145,6 +144,16 @@ abstract class Ability<T : AbilityConcept> {
 
     fun checkEnabled() {
         psychic.checkEnabled()
+    }
+
+    /**
+     * 능력을 사용 후 재사용 대기시간과 마나를 설정합니다.
+     */
+    fun exhaust() {
+        checkEnabled()
+
+        cooldownTime = concept.cooldownTime
+        psychic.consumeMana(concept.cost)
     }
 
     /**
