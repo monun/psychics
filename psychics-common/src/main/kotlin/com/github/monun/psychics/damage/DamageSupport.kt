@@ -20,12 +20,11 @@ package com.github.monun.psychics.damage
 import com.github.monun.psychics.Ability
 import com.github.monun.psychics.AbilityConcept
 import com.github.monun.psychics.event.EntityDamageByPsychicEvent
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Mob
-import org.bukkit.entity.Player
+import org.bukkit.entity.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import kotlin.math.max
@@ -207,14 +206,14 @@ private fun LivingEntity.psychicDamageActual(
         getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.run { force *= 1.0 - value }
 
         if (force > 0.0) {
-            val velocity = velocity
+            val oldVelocity = velocity
             val knockBackVelocity = Vector(deltaX, 0.0, deltaZ).normalize().multiply(force)
             val newVelocity = Vector().apply {
                 // 수평 속도를 절반 줄이고 넉백 속도 적용
-                x = velocity.x / 2.0 - knockBackVelocity.x
-                z = velocity.z / 2.0 - knockBackVelocity.z
+                x = oldVelocity.x / 2.0 - knockBackVelocity.x
+                z = oldVelocity.z / 2.0 - knockBackVelocity.z
                 // 대상이 공중에 있을경우 수직 속도를 절반 줄이고 넉백 힘 만큼 적용
-                y = if (isOnGround) min(0.4, velocity.y / 2.0 + force) else velocity.y
+                y = if (isOnGround) min(0.4, oldVelocity.y / 2.0 + force) else oldVelocity.y
             }
 
             this.velocity = newVelocity
