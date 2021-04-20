@@ -216,7 +216,7 @@ private fun LivingEntity.psychicDamageActual(
                 y = if (isOnGround) min(0.4, oldVelocity.y / 2.0 + force) else oldVelocity.y
             }
 
-            this.velocity = newVelocity
+            velocity = newVelocity
         }
     }
 
