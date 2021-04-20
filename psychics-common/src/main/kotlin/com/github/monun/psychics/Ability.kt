@@ -254,11 +254,7 @@ sealed class TestResult {
 
     object FAILED_COOLDOWN : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("아직 준비되지 않았습니다").decorate(TextDecoration.BOLD)
-                .append(space())
-                .append(text((ability.cooldownTime + 999) / 1000))
-                .append(text("초"))
-                .build()
+            text().content("아직 준비되지 않았습니다").decorate(TextDecoration.BOLD).build()
     }
 
     object FAILED_COST : TestResult() {
