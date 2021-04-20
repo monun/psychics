@@ -220,8 +220,12 @@ private fun LivingEntity.psychicDamageActual(
         }
     }
 
-    if (this is Mob && target == null)
-        target = damager
+    val mode = damager.gameMode
+    if (mode == GameMode.SURVIVAL || mode == GameMode.ADVENTURE) {
+        if (this is Mob) {
+            target = damager
+        }
+    }
 
     noDamageTicks = 0
     damage(actualDamage)
