@@ -147,6 +147,13 @@ abstract class Ability<T : AbilityConcept> {
         psychic.checkEnabled()
     }
 
+    /**
+     * [LivingEntity]에게 피해를 입힙니다.
+     *
+     * 기본 인수로 [AbilityConcept]에 정의된 변수를 사용합니다.
+     *
+     * @exception IllegalArgumentException [AbilityConcept.damage] 인수가 정의되어 있지 않을 때 발생
+     */
     fun LivingEntity.psychicDamage(
         damage: Damage = requireNotNull(concept.damage) { "Damage is not defined" },
         knockbackLocation: Location? = esper.player.location,
@@ -233,7 +240,7 @@ sealed class TestResult {
 
     object FAILED_LEVEL : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("레벨이 부족합니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+            text().content("레벨이 부족합니다").decorate(TextDecoration.BOLD)
                 .append(space())
                 .append(text(ability.concept.levelRequirement))
                 .append(text().content("레벨"))
@@ -242,12 +249,12 @@ sealed class TestResult {
 
     object FAILED_DISABLED : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("능력을 사용 할 수 없습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD).build()
+            text().content("능력을 사용 할 수 없습니다").decorate(TextDecoration.BOLD).build()
     }
 
     object FAILED_COOLDOWN : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("아직 준비되지 않았습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+            text().content("아직 준비되지 않았습니다").decorate(TextDecoration.BOLD)
                 .append(space())
                 .append(text((ability.cooldownTime + 999) / 1000))
                 .append(text("초"))
@@ -256,7 +263,7 @@ sealed class TestResult {
 
     object FAILED_COST : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("마나가 부족합니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+            text().content("마나가 부족합니다").decorate(TextDecoration.BOLD)
                 .append(space())
                 .append(text(ability.concept.cost.decimalFormat()))
                 .build()
@@ -264,13 +271,13 @@ sealed class TestResult {
 
     object FAILED_TARGET : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("대상 혹은 위치가 지정되지 않았습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+            text().content("대상 혹은 위치가 지정되지 않았습니다").decorate(TextDecoration.BOLD)
                 .build()
     }
 
     object FAILED_CHANNEL : TestResult() {
         override fun message(ability: Ability<*>) =
-            text().content("시전중인 스킬이 있습니다").color(NamedTextColor.RED).decorate(TextDecoration.BOLD).build()
+            text().content("시전중인 스킬이 있습니다").decorate(TextDecoration.BOLD).build()
     }
 
     abstract fun message(ability: Ability<*>): Component
