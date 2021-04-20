@@ -4,7 +4,6 @@ import com.github.monun.psychics.AbilityConcept
 import com.github.monun.psychics.ActiveAbility
 import com.github.monun.psychics.Channel
 import com.github.monun.psychics.attribute.EsperAttribute
-import com.github.monun.psychics.attribute.EsperStatistic
 import com.github.monun.psychics.damage.Damage
 import com.github.monun.psychics.damage.DamageType
 import com.github.monun.psychics.util.hostileFilter
@@ -64,11 +63,11 @@ class AbilitySample : ActiveAbility<AbilityConceptSample>(), Listener {
         location.world.spawnParticle(
             Particle.FLAME,
             location,
-            20,
+            10,
             0.0,
             0.0,
             0.0,
-            0.2
+            0.03
         )
     }
 
