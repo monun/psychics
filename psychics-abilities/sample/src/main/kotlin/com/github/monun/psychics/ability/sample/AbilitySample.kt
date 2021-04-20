@@ -22,7 +22,7 @@ class AbilityConceptSample : AbilityConcept() {
         castingTime = 1000L
         range = 64.0
         cost = 10.0
-        damage = Damage(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 1.0))
+        damage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 4.0)
         description = listOf(
             text("지정한 대상에게 폭발을 일으킵니다.")
         )

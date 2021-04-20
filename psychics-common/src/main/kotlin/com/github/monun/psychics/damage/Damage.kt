@@ -17,13 +17,14 @@
 
 package com.github.monun.psychics.damage
 
+import com.github.monun.psychics.attribute.EsperAttribute
 import com.github.monun.psychics.attribute.EsperStatistic
 import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
-class Damage(
+class Damage internal constructor(
     val type: DamageType,
     val stats: EsperStatistic
 ) : ConfigurationSerializable {
@@ -41,6 +42,10 @@ class Damage(
     companion object {
         private const val TYPE = "type"
         private const val STATS = "stats"
+
+        fun of(type: DamageType, stats: EsperStatistic) = Damage(type, stats)
+
+        fun of(type: DamageType, stats: Pair<EsperAttribute, Double>) = of(type, EsperStatistic.of(stats))
 
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
