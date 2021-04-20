@@ -454,8 +454,8 @@ class Psychic internal constructor(
 
         channeling?.let { channel ->
             val remainingTime = channel.remainingTime
-
-            castingBar.progress = 1.0 - remainingTime.toDouble() / channel.ability.concept.castingTime.toDouble()
+            // 시간을 -150 하여 서버 <-> 클라이언트 사이의 딜레이 최소화
+            castingBar.progress = (1.0 - max(0, remainingTime - 150).toDouble() / channel.ability.concept.castingTime.toDouble())
 
             if (remainingTime > 0L) {
                 channel.channel()
