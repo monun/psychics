@@ -20,15 +20,9 @@ package com.github.monun.psychics.command
 import com.github.monun.invfx.openWindow
 import com.github.monun.kommand.KommandBuilder
 import com.github.monun.kommand.KommandContext
-import com.github.monun.kommand.argument.KommandArgument
-import com.github.monun.kommand.argument.player
-import com.github.monun.kommand.argument.playerTarget
-import com.github.monun.kommand.argument.suggestions
+import com.github.monun.kommand.argument.*
 import com.github.monun.kommand.sendFeedback
-import com.github.monun.psychics.AbilityConcept
-import com.github.monun.psychics.PsychicConcept
-import com.github.monun.psychics.PsychicManager
-import com.github.monun.psychics.esper
+import com.github.monun.psychics.*
 import com.github.monun.psychics.invfx.InvPsychic
 import com.github.monun.psychics.item.addItemNonDuplicate
 import com.github.monun.psychics.plugin.PsychicPlugin
@@ -43,9 +37,15 @@ internal object CommandPsychic {
     private lateinit var plugin: PsychicPlugin
     lateinit var manager: PsychicManager
 
+    private lateinit var psychics: KommandArgument<PsychicConcept>
+
     internal fun initModule(plugin: PsychicPlugin, manager: PsychicManager) {
         this.plugin = plugin
         this.manager = manager
+
+        val psychics = manager.psychicConceptsByName
+
+        this.psychics = MapArgument(psychics::get, psychics::keys)
     }
 
     fun register(builder: KommandBuilder) {
@@ -57,7 +57,7 @@ internal object CommandPsychic {
             }
             then("attach") {
                 then("players" to playerTarget()) {
-                    then("psychic" to PsychicConceptArgument) {
+                    then("psychic" to psychics) {
                         executes {
                             attach(it.sender, it.parseArgument("players"), it.parseArgument("psychic"))
                         }
@@ -73,7 +73,7 @@ internal object CommandPsychic {
             }
             then("info") {
                 require { this is Player }
-                then("psychic" to PsychicConceptArgument) {
+                then("psychic" to psychics) {
                     executes {
                         info(it.sender as Player, it.parseArgument("psychic"))
                     }
@@ -137,17 +137,6 @@ internal object CommandPsychic {
     }
 }
 
-object PsychicConceptArgument : KommandArgument<PsychicConcept> {
-    override fun parse(context: KommandContext, param: String): PsychicConcept? {
-        return CommandPsychic.manager.getPsychicConcept(param)
-    }
-
-    override fun listSuggestion(context: KommandContext, target: String): Collection<String> {
-        return CommandPsychic.manager.psychicConceptsByName.keys.asSequence().filter { it.startsWith(target, true) }
-            .toList()
-    }
-}
-
 object AbilityConceptArgument : KommandArgument<AbilityConcept> {
     override fun parse(context: KommandContext, param: String): AbilityConcept? {
         val sender = context.sender
@@ -159,11 +148,11 @@ object AbilityConceptArgument : KommandArgument<AbilityConcept> {
         return null
     }
 
-    override fun listSuggestion(context: KommandContext, target: String): Collection<String> {
+    override fun suggest(context: KommandContext, target: String): Collection<String> {
         val sender = context.sender
 
         if (sender is Player) {
-            return CommandPsychic.manager.getEsper(sender)?.psychic?.concept?.abilityConcepts?.suggestions(target) { it.name }
+            return CommandPsychic.manager.getEsper(sender)?.psychic?.concept?.abilityConcepts?.suggest(target) { it.name }
                 ?: emptyList()
         }
 
