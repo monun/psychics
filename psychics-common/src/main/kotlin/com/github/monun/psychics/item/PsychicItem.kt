@@ -7,16 +7,42 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Material
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import java.util.*
 
 object PsychicItem {
     val boundTag =
         text().content("능력귀속").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
             .color(NamedTextColor.RED).build()
+
     val psionicsTag =
         text().content("초월").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.GRAY).build()
+
+    internal val enchantabilities: Map<Material, Int> = EnumMap<Material, Int>(Material::class.java).apply {
+        val armors = Material.values().filter { item ->
+            item.isItem && item.equipmentSlot.let { slot ->
+                slot != EquipmentSlot.HAND && slot != EquipmentSlot.OFF_HAND
+            }
+        }
+
+        fun putAllArmors(name: String, value: Int) {
+            armors.filter { it.name.startsWith(name) }.forEach {
+                this[it] = value
+            }
+        }
+
+        putAllArmors("LEATHER", 15)
+        putAllArmors("CHAINMAIL", 12)
+        putAllArmors("IRON", 9)
+        putAllArmors("GOLDEN", 25)
+        putAllArmors("DIAMOND", 10)
+        putAllArmors("TURTLE", 9)
+        putAllArmors("NETHERITE", 15)
+    }
 }
 
 var ItemStack.isPsychicbound: Boolean
@@ -112,3 +138,6 @@ private fun ItemStack.isSimilarLore(other: ItemStack): Boolean {
 
     return type == other.type && data == other.data && meta.displayName() == itemMeta.displayName() && meta.lore() == otherMeta.lore()
 }
+
+val Material.enchantability: Int
+    get() = PsychicItem.enchantabilities[this] ?: 0

@@ -24,12 +24,15 @@ import com.github.monun.kommand.argument.*
 import com.github.monun.kommand.sendFeedback
 import com.github.monun.psychics.*
 import com.github.monun.psychics.invfx.InvPsychic
+import com.github.monun.psychics.item.PsychicItem
 import com.github.monun.psychics.item.addItemNonDuplicate
+import com.github.monun.psychics.item.psionicsLevel
 import com.github.monun.psychics.plugin.PsychicPlugin
 import com.github.monun.tap.util.updateFromGitHubMagically
 import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -97,6 +100,14 @@ internal object CommandPsychic {
                     }
                 }
             }
+            then("enchant") {
+                then("level" to integer(0, 5)) {
+                    require {this is Player}
+                    executes {
+                        enchant(it.sender as Player, it.parseArgument<Int>("level"))
+                    }
+                }
+            }
             then("reload") {
                 executes {
                     plugin.reloadPsychics()
@@ -134,6 +145,18 @@ internal object CommandPsychic {
 
     private fun supply(sender: Player, abilityConcept: AbilityConcept) {
         sender.inventory.addItemNonDuplicate(abilityConcept.supplyItems)
+    }
+
+    private fun enchant(sender: Player, level: Int) {
+        val item = sender.inventory.itemInMainHand
+
+        if (item.type == Material.AIR) {
+            sender.sendFeedback { text("인챈트할 아이템을 손에 들어주세요.")}
+            return
+        }
+
+        item.psionicsLevel = level
+        sender.sendFeedback { text("아이템에 $level 레벨 ${PsychicItem.psionicsTag.content()}(을)를 부여했습니다.")}
     }
 }
 

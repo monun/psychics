@@ -17,8 +17,11 @@
 
 package com.github.monun.psychics.plugin
 
+import com.destroystokyo.paper.event.inventory.PrepareResultEvent
 import com.github.monun.psychics.*
+import com.github.monun.psychics.item.enchantability
 import com.github.monun.psychics.item.isPsychicbound
+import com.github.monun.psychics.item.psionicsLevel
 import com.github.monun.psychics.item.removeAllPsychicbounds
 import com.github.monun.tap.fake.FakeEntityServer
 import org.bukkit.GameMode
@@ -27,6 +30,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -34,6 +38,11 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.round
+import kotlin.random.Random.Default.nextFloat
+import kotlin.random.Random.Default.nextInt
 
 class EventListener(
     val psychicManager: PsychicManager,
@@ -122,6 +131,56 @@ class EventListener(
 
         if (entity is Player && entity.killer != null) {
             event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onEnchantItem(event: EnchantItemEvent) {
+        val item = event.item
+        val enchantability = item.type.enchantability
+
+        if (enchantability <= 0) return
+        if (nextInt(3) == 0) return // 1/3 확률로 인챈트 실패
+
+        val randEnchantability = 1 + nextInt(enchantability / 4 + 1) + nextInt(enchantability / 4 + 1)
+        val k = event.expLevelCost + randEnchantability
+        val randBonusPercent = 1.0F + (nextFloat() + nextFloat() - 1.0F) * 0.15F
+        var finalLevel = round(k * randBonusPercent)
+
+        if (finalLevel < 1.0F) finalLevel = 1.0F
+
+        item.psionicsLevel = when(finalLevel.toInt()) {
+            in 1 until 12 -> 1
+            in 12 until 23 -> 2
+            in 23 until 34 -> 3
+            in 34 until 45 -> 4
+            else -> 0
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPrepareResult(event: PrepareResultEvent) {
+        val inv = event.inventory
+        val invType = event.inventory.type
+
+        if (invType == InventoryType.GRINDSTONE) {
+            event.result?.apply {
+                psionicsLevel = 0
+            }
+        } else if (invType == InventoryType.ANVIL) {
+            event.result?.apply {
+                val contents = inv.storageContents
+                val first = contents[0] ?: return@apply
+                val second = contents[1] ?: return@apply
+                var level = max(first.psionicsLevel, second.psionicsLevel)
+
+                if (level > 0) {
+                   if (first == second)
+                       level++
+
+                    psionicsLevel = min(5, level)
+                }
+            }
         }
     }
 

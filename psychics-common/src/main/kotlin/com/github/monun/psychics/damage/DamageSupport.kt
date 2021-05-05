@@ -21,10 +21,13 @@ import com.github.monun.psychics.Ability
 import com.github.monun.psychics.AbilityConcept
 import com.github.monun.psychics.event.EntityDamageByPsychicEvent
 import com.github.monun.psychics.item.psionicsLevel
+import org.bukkit.EntityEffect
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.EnderDragon
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -92,9 +95,8 @@ object DamageSupport {
         return damage / (1.0 - 0.04 * protection) / (1.0 + (-min(armor, armorTough) - armor) / 50.0)
     }
 
-    fun calculateAttackDamage(armor: Double, armorTough: Double, psionicsLevel: Int): Double {
-        return 1.0 / (1.0 - 0.04 * psionicsLevel) / (1.0 + (-min(armor, armorTough) - armor) / 50.0)
-    }
+    fun calculateAttackDamage(armor: Double, armorTough: Double, psionicsLevel: Double) =
+        inversePsychicDamage(1.0, armor, armorTough, psionicsLevel)
 
     // 마인크래프트 레벨에 의한 토탈 경험치 공식
     /*
@@ -149,9 +151,9 @@ val LivingEntity.attackDamage: Double
     get() {
         val armor = getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0
         val armorTough = getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS)?.value ?: 0.0
-        val psionicsLevel = equipment?.armorContents?.sumBy { it.psionicsLevel } ?: 0
+        val psionicsLevel = equipment?.armorContents?.asSequence()?.filterNotNull()?.sumBy { it.psionicsLevel } ?: 0
 
-        return DamageSupport.calculateAttackDamage(armor, armorTough, psionicsLevel)
+        return DamageSupport.calculateAttackDamage(armor, armorTough, psionicsLevel.toDouble())
     }
 
 /**
@@ -233,7 +235,12 @@ private fun LivingEntity.psychicDamageActual(
     }
 
     noDamageTicks = 0
-    damage(actualDamage)
+    if (this is EnderDragon) {
+        health = max(0.0, health - actualDamage)
+        playEffect(EntityEffect.HURT)
+        world.playSound(location, Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 1.0F)
+    }
+    else damage(actualDamage)
 
     return actualDamage
 }
