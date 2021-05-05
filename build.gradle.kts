@@ -44,15 +44,20 @@ subprojects {
         compileOnly("com.github.monun:invfx:1.4.3")
 
         implementationOnlyCommon("com.github.monun:tap:3.4.9")
-        implementationOnlyCommon("com.github.monun:kommand:0.8.1")
+        implementationOnlyCommon("com.github.monun:kommand:0.9.0")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+        testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
         testImplementation("org.mockito:mockito-core:3.6.28")
         testImplementation("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
+
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
     }
 
     tasks {
+        withType<Test>().configureEach {
+            useJUnitPlatform()
+        }
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
             kotlinOptions.jvmTarget = "11"
         }
@@ -81,10 +86,6 @@ project(":psychics-common") {
 }
 
 tasks {
-    test {
-        useJUnitPlatform()
-    }
-
     create<DefaultTask>("setupWorkspace") {
         doLast {
             val versions = arrayOf(
