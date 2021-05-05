@@ -1,7 +1,11 @@
 package com.github.monun.psychics.item
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -9,43 +13,27 @@ import org.bukkit.inventory.meta.ItemMeta
 
 object PsychicItem {
     val boundTag =
-        text().content("Psychicbound").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
+        text().content("능력귀속").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD)
             .color(NamedTextColor.RED).build()
+    val psionicsTag =
+        text().content("초월").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.GRAY).build()
 }
 
 var ItemStack.isPsychicbound: Boolean
-    get() = lore()?.let { PsychicItem.boundTag in it } ?: false
+    get() = itemMeta.isPsychicbound
     set(value) {
-        val meta = itemMeta
-        val lore = meta.lore() ?: emptyList()
-
-        if (value) {
-            if (PsychicItem.boundTag in lore) return
-
-            meta.lore(lore.toMutableList().apply { add(PsychicItem.boundTag) })
-        } else {
-            val i = lore.indexOf(PsychicItem.boundTag); if (i == -1) return
-
-            meta.lore(lore.toMutableList().apply { removeAt(i) })
+        itemMeta = itemMeta.apply {
+            isPsychicbound = value
         }
-
-        itemMeta = meta
     }
 
 var ItemMeta.isPsychicbound
     get() = lore()?.let { PsychicItem.boundTag in it } ?: false
     set(value) {
-        val lore = lore() ?: emptyList()
-
-        if (value) {
-            if (PsychicItem.boundTag in lore) return
-
-            lore(lore.toMutableList().apply { add(PsychicItem.boundTag) })
-        } else {
-            val i = lore.indexOf(PsychicItem.boundTag); if (i == -1) return
-
-            lore(lore.toMutableList().apply { removeAt(i) })
-        }
+        val lore = lore() ?: ArrayList<Component>()
+        lore.remove(PsychicItem.boundTag)
+        if (value) lore.add(PsychicItem.boundTag)
+        lore(lore)
     }
 
 fun Inventory.removeAllPsychicbounds() {
@@ -56,6 +44,53 @@ fun Inventory.removeAllPsychicbounds() {
             setItem(i, null)
         }
     }
+}
+
+var ItemStack.psionicsLevel
+    get() = itemMeta.transcendenceLevel
+    set(value) {
+        itemMeta = itemMeta.apply {
+            transcendenceLevel = value
+        }
+    }
+
+var ItemMeta.transcendenceLevel
+    get() = lore()?.find { lore ->
+        lore is TextComponent && lore.content() == PsychicItem.psionicsTag.content()
+    }?.let { tag ->
+        tag.children().firstOrNull()?.color()?.value()
+    } ?: 0
+    set(value) {
+        val lore = lore() ?: ArrayList<Component>()
+        lore.removeIf { it is TextComponent && it.content() == PsychicItem.psionicsTag.content() }
+
+        if (value > 0) {
+            lore.add(
+                0, PsychicItem.psionicsTag.children(
+                    listOf(
+                        space().color(TextColor.color(value)),
+                        text().content(value.toRomanNumerals()).color(NamedTextColor.GRAY)
+                            .decoration(TextDecoration.ITALIC, false).build()
+                    )
+                )
+            )
+        }
+
+        lore(lore)
+    }
+
+private fun Int.toRomanNumerals() = when (this) {
+    1 -> "I"
+    2 -> "II"
+    3 -> "III"
+    4 -> "IV"
+    5 -> "V"
+    6 -> "VI"
+    7 -> "VII"
+    8 -> "VIII"
+    9 -> "IX"
+    10 -> "X"
+    else -> toString()
 }
 
 fun Inventory.addItemNonDuplicate(items: Collection<ItemStack>) {
