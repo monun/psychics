@@ -19,7 +19,7 @@ package com.github.monun.psychics
 
 import com.github.monun.psychics.attribute.EsperAttribute
 import com.github.monun.psychics.attribute.EsperStatistic
-import com.github.monun.psychics.damage.DamageSupport
+import com.github.monun.psychics.damage.attackDamage
 import com.github.monun.psychics.item.removeAllPsychicbounds
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
@@ -60,7 +60,7 @@ class Esper(
      */
     fun getAttribute(attr: EsperAttribute): Double {
         return when (attr) {
-            EsperAttribute.ATTACK_DAMAGE -> DamageSupport.calculateAttackDamage(player.level)
+            EsperAttribute.ATTACK_DAMAGE -> player.attackDamage
             EsperAttribute.LEVEL -> player.level.toDouble()
             EsperAttribute.DEFENSE -> player.getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0
             EsperAttribute.HEALTH -> player.health
