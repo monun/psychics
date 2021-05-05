@@ -20,11 +20,14 @@ package com.github.monun.psychics.damage
 import com.github.monun.psychics.Ability
 import com.github.monun.psychics.AbilityConcept
 import com.github.monun.psychics.event.EntityDamageByPsychicEvent
+import com.github.monun.psychics.item.psionicsLevel
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.*
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mob
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import kotlin.math.max
@@ -89,20 +92,12 @@ object DamageSupport {
         return damage / (1.0 - 0.04 * protection) / (1.0 + (-min(armor, armorTough) - armor) / 50.0)
     }
 
-    // 0레벨일때 최소 공격력 20
-    const val minAttackDamage = 1.0
-    val maxAttackDamage = inversePsychicDamage(1.0, 20.0, 12.0, 20.0)
-    val gapAttackDamage = maxAttackDamage - minAttackDamage
-
-    // 공격력 최대 증가레벨
-    private val maxAttackDamageLevel = 40
-    private val attackDamagePerExp = gapAttackDamage / calculateTotalExp(maxAttackDamageLevel)
-
-    fun calculateAttackDamage(level: Int): Double {
-        return minAttackDamage + attackDamagePerExp * calculateTotalExp(min(maxAttackDamageLevel, level))
+    fun calculateAttackDamage(armor: Double, armorTough: Double, psionicsLevel: Int): Double {
+        return 1.0 / (1.0 - 0.04 * psionicsLevel) / (1.0 + (-min(armor, armorTough) - armor) / 50.0)
     }
 
     // 마인크래프트 레벨에 의한 토탈 경험치 공식
+    /*
     private fun calculateTotalExp(level: Int): Double {
         if (level <= 16) {
             return level * level + 6.0 * level
@@ -112,6 +107,7 @@ object DamageSupport {
         }
         return 4.5 * level * level - 162.5 * level + 2220.0
     }
+    */
 }
 
 /**
@@ -148,6 +144,15 @@ fun LivingEntity.getProtection(enchantment: Enchantment): Int {
 
     return min(40, protection)
 }
+
+val LivingEntity.attackDamage: Double
+    get() {
+        val armor = getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0
+        val armorTough = getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS)?.value ?: 0.0
+        val psionicsLevel = equipment?.armorContents?.sumBy { it.psionicsLevel } ?: 0
+
+        return DamageSupport.calculateAttackDamage(armor, armorTough, psionicsLevel)
+    }
 
 /**
  * 개체에게 능력 피해를 입힙니다.
