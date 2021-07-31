@@ -1,34 +1,40 @@
 import org.gradle.kotlin.dsl.support.zipTo
 
+val core = project(":${rootProject.name}-core")
+
 subprojects {
-    if (version == "unspecified") version = parent!!.version
+    if (version == "unspecified") {
+        version = rootProject.version
+    }
+
+    project.extra.set("abilityName", name.removePrefix("ability-"))
 
     dependencies {
-        compileOnly(project(":psychics-common"))
+        implementation(core)
     }
 
     tasks {
-        shadowJar {
-            archiveBaseName.set("${project.group}.${project.name}")
+        processResources {
+            filesMatching("**/*.yml") {
+                expand(project.properties)
+            }
         }
-        create<Copy>("copyToParent") {
-            from(shadowJar)
-            into { File(parent!!.buildDir, "libs") }
-        }
-        assemble {
-            dependsOn(named("copyToParent"))
-        }
-        create<Copy>("copyToServer") {
-            from(shadowJar)
-            var dest = File(rootDir, ".server/plugins/Psychics/abilities/")
-            // if plugin.jar exists in plugins change dest to plugins/update
-            if (File(dest, shadowJar.get().archiveFileName.get()).exists()) dest = File(dest, "update")
-            into(dest)
+
+        register<Jar>("paperJar") {
+            archiveVersion.set("")
+            archiveBaseName.set("${project.group}.${project.name.removePrefix("ability-")}")
+            from(sourceSets["main"].output)
+
+            doLast {
+                copy {
+                    from(archiveFile)
+                    val plugins = File(rootDir, ".debug/plugins/Psychics/abilities")
+                    into(if (File(plugins, archiveFileName.get()).exists()) File(plugins, "update") else plugins)
+                }
+            }
         }
     }
 }
-
-tasks.filter { it.name != "clean" }.forEach { it.enabled = false }
 
 gradle.buildFinished {
     val libs = File(buildDir, "libs")

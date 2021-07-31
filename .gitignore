@@ -3,12 +3,15 @@
 out/
 
 # Gradle
-.gradle/
+.gradle
 build/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 !gradle-wrapper.properties
 
-# Server
-.server/
+# Debug server folder
+.debug/
+
+# BuildTools
+.buildtools/
