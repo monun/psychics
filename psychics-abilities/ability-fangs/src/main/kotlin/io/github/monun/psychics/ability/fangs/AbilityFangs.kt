@@ -50,9 +50,9 @@ class AbilityConceptFangs : AbilityConcept() {
 
 class AbilityFangs : ActiveAbility<io.github.monun.psychics.ability.fangs.AbilityConceptFangs>(), Listener {
 
-    private lateinit var effectQueue: PriorityQueue<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang>
-    private lateinit var damageQueue: PriorityQueue<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang>
-    private lateinit var removeQueue: PriorityQueue<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang>
+    private lateinit var effectQueue: PriorityQueue<Fang>
+    private lateinit var damageQueue: PriorityQueue<Fang>
+    private lateinit var removeQueue: PriorityQueue<Fang>
 
     override fun onEnable() {
         effectQueue = PriorityQueue()
@@ -63,7 +63,7 @@ class AbilityFangs : ActiveAbility<io.github.monun.psychics.ability.fangs.Abilit
     }
 
     override fun onDisable() {
-        fun PriorityQueue<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang>.destroy() {
+        fun PriorityQueue<Fang>.destroy() {
             forEach { it.fakeEntity.remove() }
             clear()
         }
@@ -88,7 +88,7 @@ class AbilityFangs : ActiveAbility<io.github.monun.psychics.ability.fangs.Abilit
             val fakeEntity = psychic.spawnFakeEntity(location.clone().apply { y -= 0.3 }, EvokerFangs::class.java)
             val effectTime = currentTime + concept.fangPerTime * it
             effectQueue.offer(
-                io.github.monun.psychics.ability.fangs.AbilityFangs.Fang(
+                Fang(
                     loc,
                     fakeEntity,
                     effectTime,
@@ -135,13 +135,13 @@ class AbilityFangs : ActiveAbility<io.github.monun.psychics.ability.fangs.Abilit
         val fakeEntity: FakeEntity,
         var nextRunTime: Long,
         val damaged: MutableSet<Entity>
-    ) : Comparable<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang> {
-        override fun compareTo(other: io.github.monun.psychics.ability.fangs.AbilityFangs.Fang): Int {
+    ) : Comparable<Fang> {
+        override fun compareTo(other: Fang): Int {
             return nextRunTime.compareTo(other.nextRunTime)
         }
     }
 
-    private fun PriorityQueue<io.github.monun.psychics.ability.fangs.AbilityFangs.Fang>.execute(current: Long, executor: (io.github.monun.psychics.ability.fangs.AbilityFangs.Fang) -> Unit) {
+    private fun PriorityQueue<Fang>.execute(current: Long, executor: (Fang) -> Unit) {
         while (isNotEmpty()) {
             val fang = peek()
 
