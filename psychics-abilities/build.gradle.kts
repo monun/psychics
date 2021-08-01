@@ -7,7 +7,13 @@ subprojects {
         version = rootProject.version
     }
 
-    project.extra.set("abilityName", name.removePrefix("ability-"))
+    project.extra.apply {
+        set("projectName", name.removePrefix("ability-"))
+        set("packageName", name.removePrefix("ability-").replace("-", ""))
+        set("abilityName", name.removePrefix("ability-").split('-').joinToString(separator = "") { it.capitalize() })
+
+
+    }
 
     dependencies {
         implementation(core)

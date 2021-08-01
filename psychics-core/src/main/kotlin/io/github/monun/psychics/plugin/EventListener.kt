@@ -45,8 +45,8 @@ import kotlin.random.Random.Default.nextFloat
 import kotlin.random.Random.Default.nextInt
 
 class EventListener(
-    val psychicManager: PsychicManager,
-    val fakeEntityServer: FakeEntityServer
+    private val psychicManager: PsychicManager,
+    private val fakeEntityServer: FakeEntityServer
 ) : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
@@ -195,7 +195,7 @@ private fun Psychic.castByWand(event: PlayerEvent, action: ActiveAbility.WandAct
         if (ability is ActiveAbility) {
             val result = ability.tryCast(event, action)
 
-            if (result !== TestResult.SUCCESS) {
+            if (result !== TestResult.Success) {
                 esper.player.sendActionBar(result.message(ability))
             }
         }

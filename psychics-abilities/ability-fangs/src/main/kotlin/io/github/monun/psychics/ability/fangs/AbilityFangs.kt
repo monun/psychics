@@ -48,7 +48,7 @@ class AbilityConceptFangs : AbilityConcept() {
     }
 }
 
-class AbilityFangs : ActiveAbility<io.github.monun.psychics.ability.fangs.AbilityConceptFangs>(), Listener {
+class AbilityFangs : ActiveAbility<AbilityConceptFangs>(), Listener {
 
     private lateinit var effectQueue: PriorityQueue<Fang>
     private lateinit var damageQueue: PriorityQueue<Fang>

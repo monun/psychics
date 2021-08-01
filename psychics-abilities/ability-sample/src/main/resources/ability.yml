@@ -1,5 +1,5 @@
 group: ${group}
-name: ${abilityName}
+name: ${projectName}
 version: ${version}
-main: ${group}.psychics.ability.${abilityName}.Ability${abilityName.capitalize()}
+main: ${group}.psychics.ability.${packageName}.Ability${abilityName.capitalize()}
 authors: [ $author ]

@@ -25,5 +25,6 @@ enum class AbilityType(
 ) {
     PASSIVE(NamedTextColor.AQUA),
     ACTIVE(NamedTextColor.RED),
-    TOGGLE(NamedTextColor.YELLOW);
+    TOGGLE(NamedTextColor.YELLOW),
+    COMPLEX(NamedTextColor.WHITE)
 }

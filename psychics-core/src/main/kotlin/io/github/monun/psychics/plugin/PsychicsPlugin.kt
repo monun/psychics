@@ -26,6 +26,7 @@ import io.github.monun.psychics.damage.Damage
 import io.github.monun.kommand.kommand
 import io.github.monun.tap.event.EntityEventManager
 import io.github.monun.tap.fake.FakeEntityServer
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
@@ -58,7 +59,9 @@ class PsychicsPlugin : JavaPlugin() {
     }
 
     private fun loadModules() {
-        fakeEntityServer = FakeEntityServer.create(this)
+        fakeEntityServer = FakeEntityServer.create(this).apply {
+            Bukkit.getOnlinePlayers().forEach { addPlayer(it) }
+        }
         entityEventManager = EntityEventManager(this)
         psychicManager = PsychicManager(
             this,

@@ -157,7 +157,7 @@ fun TooltipBuilder.stats(stats: EsperStatistic?, deco: () -> Pair<Pair<TextColor
     )
 }
 
-fun TooltipBuilder.stats(damage: Damage?, deco: () -> Pair<TextColor, String>) {
+fun TooltipBuilder.stats(prefix: Component?, damage: Damage?, deco: () -> Pair<TextColor, String>) {
     if (damage == null) return
 
     val pair = deco()
@@ -165,14 +165,18 @@ fun TooltipBuilder.stats(damage: Damage?, deco: () -> Pair<TextColor, String>) {
     val template = pair.second
 
     header(
-        text().decoration(TextDecoration.ITALIC, false)
-            .append(text().content(damage.type.i18Name).color(color).decorate(TextDecoration.BOLD))
+        text().decoration(TextDecoration.ITALIC, false).also {
+            if (prefix != null) {
+                it.append(prefix).append(space())
+            }
+        }.append(text().content(damage.type.i18Name).color(color).decorate(TextDecoration.BOLD))
             .append(space())
             .append(text().content("<$template>").color(NamedTextColor.WHITE))
             .append(damage.stats.toComponent())
             .build()
     )
 }
+fun TooltipBuilder.stats(damage: Damage?, deco: () -> Pair<TextColor, String>) = stats(null, damage, deco)
 
 fun TooltipBuilder.template(name: String, value: String) {
     template(name) {

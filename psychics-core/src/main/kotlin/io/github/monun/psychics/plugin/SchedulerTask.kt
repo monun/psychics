@@ -21,8 +21,8 @@ import io.github.monun.psychics.PsychicManager
 import io.github.monun.tap.fake.FakeEntityServer
 
 class SchedulerTask(
-    val psychicManager: PsychicManager,
-    val fakeEntityServer: FakeEntityServer
+    private val psychicManager: PsychicManager,
+    private val fakeEntityServer: FakeEntityServer
 ) : Runnable {
 
     override fun run() {

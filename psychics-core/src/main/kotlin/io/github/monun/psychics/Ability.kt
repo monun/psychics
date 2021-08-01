@@ -56,6 +56,17 @@ abstract class Ability<T : AbilityConcept> {
             }
         }
 
+    var durationTime: Long = 0L
+        get() {
+            return max(0L, field - Times.current)
+        }
+        set(value) {
+            checkState()
+
+            val times = max(0L, value)
+            field = Times.current + times
+        }
+
     lateinit var psychic: Psychic
 
     val esper
@@ -74,12 +85,12 @@ abstract class Ability<T : AbilityConcept> {
     open fun test(): TestResult {
         val psychic = psychic
 
-        if (!psychic.isEnabled) return TestResult.FAILED_DISABLED
-        if (esper.player.level < concept.levelRequirement) return TestResult.FAILED_LEVEL
-        if (cooldownTime > 0L) return TestResult.FAILED_COOLDOWN
-        if (psychic.mana < concept.cost) return TestResult.FAILED_COST
+        if (!psychic.isEnabled) return TestResult.FailedDisabled
+        if (esper.player.level < concept.levelRequirement) return TestResult.FailedLevel
+        if (cooldownTime > 0L) return TestResult.FailedCooldown
+        if (psychic.mana < concept.cost) return TestResult.FailedCost
 
-        return TestResult.SUCCESS
+        return TestResult.Success
     }
 
     internal fun save(config: ConfigurationSection) {
@@ -178,7 +189,7 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
     var targeter: (() -> Any?)? = null
 
     override fun test(): TestResult {
-        if (psychic.channeling != null) return TestResult.FAILED_CHANNEL
+        if (psychic.channeling != null) return TestResult.FailedChannel
 
         return super.test()
     }
@@ -192,18 +203,18 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
     ): TestResult {
         val result = test()
 
-        if (result === TestResult.SUCCESS) {
+        if (result === TestResult.Success) {
             var target: Any? = null
 
             if (targeter != null) {
-                target = targeter.invoke() ?: return TestResult.FAILED_TARGET
+                target = targeter.invoke() ?: return TestResult.FailedTarget
             }
 
             return if (psychic.mana >= concept.cost) {
                 cast(event, action, castingTime, target)
-                TestResult.SUCCESS
+                TestResult.Success
             } else {
-                TestResult.FAILED_COST
+                TestResult.FailedCost
             }
         }
 
@@ -242,11 +253,11 @@ fun Ability<*>.targetFilter(): TargetFilter {
 }
 
 sealed class TestResult {
-    object SUCCESS : TestResult() {
+    object Success : TestResult() {
         override fun message(ability: Ability<*>) = text("성공")
     }
 
-    object FAILED_LEVEL : TestResult() {
+    object FailedLevel : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("레벨이 부족합니다").decorate(TextDecoration.BOLD)
                 .append(space())
@@ -255,17 +266,17 @@ sealed class TestResult {
                 .build()
     }
 
-    object FAILED_DISABLED : TestResult() {
+    object FailedDisabled : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("능력을 사용 할 수 없습니다").decorate(TextDecoration.BOLD).build()
     }
 
-    object FAILED_COOLDOWN : TestResult() {
+    object FailedCooldown : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("아직 준비되지 않았습니다").decorate(TextDecoration.BOLD).build()
     }
 
-    object FAILED_COST : TestResult() {
+    object FailedCost : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("마나가 부족합니다").decorate(TextDecoration.BOLD)
                 .append(space())
@@ -273,13 +284,13 @@ sealed class TestResult {
                 .build()
     }
 
-    object FAILED_TARGET : TestResult() {
+    object FailedTarget : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("대상 혹은 위치가 지정되지 않았습니다").decorate(TextDecoration.BOLD)
                 .build()
     }
 
-    object FAILED_CHANNEL : TestResult() {
+    object FailedChannel : TestResult() {
         override fun message(ability: Ability<*>) =
             text().content("시전중인 스킬이 있습니다").decorate(TextDecoration.BOLD).build()
     }
