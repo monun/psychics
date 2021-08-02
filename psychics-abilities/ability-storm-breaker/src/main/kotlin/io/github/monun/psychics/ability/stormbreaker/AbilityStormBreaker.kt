@@ -64,7 +64,7 @@ class AbilityConceptStormBreaker : AbilityConcept() {
     var slowDurationTicks = 40
 
     init {
-        type = AbilityType.COMPLEX
+        type = AbilityType.ACTIVE
         range = 256.0
         cooldownTime = 10L * 1000L
         durationTime = 5L * 1000L

@@ -1,9 +1,6 @@
 package io.github.monun.psychics.ability.slingshot
 
-import io.github.monun.psychics.Ability
-import io.github.monun.psychics.AbilityConcept
-import io.github.monun.psychics.PsychicProjectile
-import io.github.monun.psychics.TestResult
+import io.github.monun.psychics.*
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.damage.Damage
@@ -37,6 +34,7 @@ class AbilityConceptSlingShot : AbilityConcept() {
     var stoneSize = 2.0
 
     init {
+        type = AbilityType.ACTIVE
         range = 128.0
         cooldownTime = 80L
         knockback = 0.05
