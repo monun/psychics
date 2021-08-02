@@ -39,8 +39,8 @@ class AbilityConceptSlingShot : AbilityConcept() {
     init {
         range = 128.0
         cooldownTime = 80L
-        knockback = 0.5
-        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.5))
+        knockback = 0.05
+        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.25))
         wand = ItemStack(Material.COBBLESTONE)
 
         listOf(
