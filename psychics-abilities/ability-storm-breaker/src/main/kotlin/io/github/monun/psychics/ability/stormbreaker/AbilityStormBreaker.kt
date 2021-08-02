@@ -208,7 +208,6 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
                                     updateMetadata<ArmorStand> {
                                         isMarker = true
                                         invisible = true
-                                        isGlowing = true
                                     }
                                     updateEquipment {
                                         helmet = item.clone()

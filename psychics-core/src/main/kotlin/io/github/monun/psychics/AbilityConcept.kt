@@ -249,6 +249,9 @@ open class AbilityConcept {
         }
 
         runCatching { onRenderTooltip(tooltip, supplyStats) }
+        container.description.author?.let { author ->
+            tooltip.footer(text().color(NamedTextColor.GRAY).content("by. ").append(text().content(author)).build())
+        }
 
         return tooltip
     }

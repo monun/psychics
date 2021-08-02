@@ -171,7 +171,7 @@ fun LivingEntity.psychicDamage(
     knockbackSource: Location? = damager.location,
     knockbackForce: Double = 0.0
 ): Double {
-    val event = io.github.monun.psychics.event.EntityDamageByPsychicEvent(
+    val event = EntityDamageByPsychicEvent(
         damager,
         this,
         damage,

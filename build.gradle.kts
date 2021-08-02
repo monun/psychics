@@ -1,7 +1,3 @@
-import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
-import java.io.FileFilter
-
 plugins {
     kotlin("jvm") version "1.5.21"
 }
