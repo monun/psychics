@@ -1,10 +1,10 @@
 package io.github.monun.psychics.invfx
 
+import io.github.monun.invfx.InvFX
+import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.psychics.PsychicConcept
 import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.item.addItemNonDuplicate
-import io.github.monun.invfx.InvFX
-import io.github.monun.invfx.frame.InvFrame
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor

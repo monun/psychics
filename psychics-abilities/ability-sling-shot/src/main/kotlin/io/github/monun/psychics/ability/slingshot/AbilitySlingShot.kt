@@ -12,7 +12,6 @@ import io.github.monun.tap.fake.FakeEntity
 import io.github.monun.tap.fake.Movement
 import io.github.monun.tap.fake.Trail
 import io.github.monun.tap.math.normalizeAndLength
-import io.github.monun.tap.trail.TrailSupport
 import net.kyori.adventure.text.Component.text
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand

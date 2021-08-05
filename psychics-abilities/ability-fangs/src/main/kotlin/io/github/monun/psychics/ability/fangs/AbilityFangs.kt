@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import java.util.*
-import kotlin.collections.HashSet
 
 @Name("fangs")
 class AbilityConceptFangs : AbilityConcept() {

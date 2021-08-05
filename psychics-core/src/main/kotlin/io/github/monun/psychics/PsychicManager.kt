@@ -17,9 +17,9 @@
 
 package io.github.monun.psychics
 
+import com.google.common.collect.ImmutableSortedMap
 import io.github.monun.psychics.loader.AbilityLoader
 import io.github.monun.psychics.plugin.PsychicsPlugin
-import com.google.common.collect.ImmutableSortedMap
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration

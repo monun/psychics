@@ -5,7 +5,6 @@ import io.github.monun.psychics.AbilityConcept;
 import io.github.monun.psychics.damage.DamageType;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

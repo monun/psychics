@@ -17,6 +17,9 @@
 
 package io.github.monun.psychics.command
 
+import io.github.monun.invfx.openFrame
+import io.github.monun.kommand.KommandSource
+import io.github.monun.kommand.node.LiteralNode
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.PsychicConcept
 import io.github.monun.psychics.PsychicManager
@@ -26,9 +29,6 @@ import io.github.monun.psychics.item.PsychicItem
 import io.github.monun.psychics.item.addItemNonDuplicate
 import io.github.monun.psychics.item.psionicsLevel
 import io.github.monun.psychics.plugin.PsychicsPlugin
-import io.github.monun.invfx.openFrame
-import io.github.monun.kommand.KommandSource
-import io.github.monun.kommand.node.LiteralNode
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material

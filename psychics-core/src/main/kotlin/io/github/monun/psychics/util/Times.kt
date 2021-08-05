@@ -17,8 +17,6 @@
 
 package io.github.monun.psychics.util
 
-import kotlin.math.max
-
 object Times {
     private val INIT_NANO_TIME = System.nanoTime()
 
