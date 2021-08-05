@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityDamageByPsychicEvent extends EntityDamageByEntityEvent {
-    private static final HandlerList handlers = new HandlerList();
 
     private final Ability<? extends AbilityConcept> ability;
 
@@ -36,11 +35,6 @@ public class EntityDamageByPsychicEvent extends EntityDamageByEntityEvent {
         this.damageType = damageType;
         this.knockbackSource = knockbackSource;
         this.knockbackForce = knockbackForce;
-    }
-
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @NotNull
@@ -70,9 +64,4 @@ public class EntityDamageByPsychicEvent extends EntityDamageByEntityEvent {
         this.knockbackForce = knockbackForce;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
 }

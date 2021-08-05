@@ -17,8 +17,10 @@
 
 package io.github.monun.psychics
 
+import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.psychicDamage
+import io.github.monun.psychics.damage.psychicHeal
 import io.github.monun.psychics.format.decimalFormat
 import io.github.monun.psychics.util.TargetFilter
 import io.github.monun.psychics.util.Times
@@ -183,6 +185,31 @@ abstract class Ability<T : AbilityConcept> {
 
         psychicDamage(this@Ability, type, amount, esper.player, knockbackLocation, knockback)
     }
+
+    /**
+     * [LivingEntity]를 치유합니다.
+     *
+     * 기본 인수로 [AbilityConcept]에 정의된 변수를 사용합니다.
+     *
+     * @exception IllegalArgumentException [AbilityConcept.healing] 인수가 정의되어 있지 않을 때 발생
+     */
+    fun LivingEntity.psychicHeal(
+        heal: EsperStatistic = requireNotNull(concept.healing) { "Healing is not defined" },
+    ) {
+        val amount = esper.getStatistic(heal)
+
+        psychicHeal(this@Ability, amount, esper.player)
+    }
+
+    /**
+     * [LivingEntity]를 치유합니다.
+     */
+    fun LivingEntity.psychicHeal(
+        amount: Double
+    ) {
+        psychicHeal(this@Ability, amount, esper.player)
+    }
+
 }
 
 abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {

@@ -20,6 +20,7 @@ package io.github.monun.psychics.damage
 import io.github.monun.psychics.Ability
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.event.EntityDamageByPsychicEvent
+import io.github.monun.psychics.event.EntityHealByPsychicEvent
 import io.github.monun.psychics.item.psionicsLevel
 import org.bukkit.EntityEffect
 import org.bukkit.GameMode
@@ -147,6 +148,7 @@ fun LivingEntity.getProtection(enchantment: Enchantment): Int {
     return min(40, protection)
 }
 
+@Suppress("UselessCallOnCollection")
 val LivingEntity.attackDamage: Double
     get() {
         val armor = getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0
@@ -239,8 +241,28 @@ private fun LivingEntity.psychicDamageActual(
         health = max(0.0, health - actualDamage)
         playEffect(EntityEffect.HURT)
         world.playSound(location, Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 1.0F)
-    }
-    else damage(actualDamage)
+    } else damage(actualDamage)
 
     return actualDamage
+}
+
+fun LivingEntity.psychicHeal(
+    ability: Ability<out AbilityConcept>,
+    amount: Double,
+    healer: Player
+): Double {
+    if (!isValid) return 0.0
+
+    val currentHealth = health; if (currentHealth <= 0.0) return 0.0
+    val event = EntityHealByPsychicEvent(healer, this, amount, ability)
+
+    if (!event.callEvent()) return 0.0
+
+    val maxHealth = getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: error("Not found attribute Attribute.GENERIC_MAX_HEALTH")
+    val newAmount = event.amount
+    val newHealth = min(maxHealth, currentHealth + newAmount)
+
+    health = newHealth
+
+    return newAmount
 }
