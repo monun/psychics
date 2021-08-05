@@ -25,7 +25,6 @@ import io.github.monun.psychics.tooltip.removeDefaultItemDecorations
 import io.github.monun.psychics.tooltip.stats
 import io.github.monun.psychics.tooltip.template
 import io.github.monun.tap.config.*
-import net.kyori.adventure.text.BuildableComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text

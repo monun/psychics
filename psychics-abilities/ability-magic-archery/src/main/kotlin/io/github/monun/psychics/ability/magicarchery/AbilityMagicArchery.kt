@@ -8,6 +8,7 @@ import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.damage.psychicDamage
 import io.github.monun.psychics.util.TargetFilter
+import io.github.monun.tap.config.Name
 import io.github.monun.tap.effect.playFirework
 import io.github.monun.tap.trail.TrailSupport
 import net.kyori.adventure.text.Component.text
@@ -22,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionType
 import kotlin.random.Random.Default.nextFloat
 
-
+@Name("magic-archery")
 class AbilityConceptMagicArchery : AbilityConcept() {
     var arrowSize = 1.0
 

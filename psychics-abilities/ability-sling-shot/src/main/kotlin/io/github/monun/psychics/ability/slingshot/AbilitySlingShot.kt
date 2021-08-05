@@ -7,6 +7,7 @@ import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.util.TargetFilter
 import io.github.monun.tap.config.Config
+import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity
 import io.github.monun.tap.fake.Movement
 import io.github.monun.tap.fake.Trail
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
 // 돌을 던지는 능력
+@Name("sling-shot")
 class AbilityConceptSlingShot : AbilityConcept() {
     @Config
     var stoneSpeed = 4.0

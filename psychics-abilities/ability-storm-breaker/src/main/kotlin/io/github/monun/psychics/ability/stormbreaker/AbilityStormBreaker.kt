@@ -10,6 +10,7 @@ import io.github.monun.psychics.tooltip.stats
 import io.github.monun.psychics.tooltip.template
 import io.github.monun.psychics.util.TargetFilter
 import io.github.monun.tap.config.Config
+import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity
 import io.github.monun.tap.fake.Movement
 import io.github.monun.tap.fake.Trail
@@ -35,6 +36,7 @@ import org.bukkit.util.Vector
 import kotlin.random.Random.Default.nextDouble
 import kotlin.random.Random.Default.nextFloat
 
+@Name("storm-breaker")
 class AbilityConceptStormBreaker : AbilityConcept() {
     @Config
     var lightningRadius = 2.0

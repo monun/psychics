@@ -8,6 +8,7 @@ import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.util.Times
 import io.github.monun.psychics.util.hostileFilter
 import io.github.monun.tap.config.Config
+import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
@@ -22,6 +23,7 @@ import org.bukkit.util.BoundingBox
 import java.util.*
 import kotlin.collections.HashSet
 
+@Name("fangs")
 class AbilityConceptFangs : AbilityConcept() {
     @Config
     var fangsSpace = 1.5

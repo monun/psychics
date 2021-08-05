@@ -7,6 +7,7 @@ import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.util.hostileFilter
+import io.github.monun.tap.config.Name
 import io.github.monun.tap.effect.playFirework
 import net.kyori.adventure.text.Component.text
 import org.bukkit.*
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
 
 // 지정한 대상에게 폭죽 효과와 피해를 입히는 능력
+@Name("sample")
 class AbilityConceptSample : AbilityConcept() {
     init {
         cooldownTime = 5000L
