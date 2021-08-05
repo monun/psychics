@@ -388,6 +388,24 @@ class Psychic internal constructor(
     }
 
     /**
+     * 가상 [org.bukkit.entity.Item]을 생성합니다.
+     *
+     * 능력이 비활성화 될 때 제거됩니다.
+     *
+     * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
+     * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
+     */
+    fun spawnItem(location: Location, itemStack: ItemStack): FakeEntity {
+        checkState()
+        checkEnabled()
+
+        val fakeEntity = manager.plugin.fakeEntityServer.spawnItem(location, itemStack)
+        fakeEntities.add(fakeEntity)
+
+        return fakeEntity
+    }
+
+    /**
      * 마나를 소모합니다.
      *
      * 전달한 양보다 적다면 소모되지 않습니다.
