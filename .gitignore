@@ -15,3 +15,10 @@ build/
 
 # BuildTools
 .buildtools/
+
+# Abilities
+psychics-abilities/ability-tree-converter
+
+# Core
+
+psychics-core
