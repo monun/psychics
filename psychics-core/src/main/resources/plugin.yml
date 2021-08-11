@@ -6,4 +6,4 @@ author: Monun
 libraries:
   - io.github.monun:tap:4.1.2
   - io.github.monun:invfx:3.0.0
-  - io.github.monun:kommand:2.4.1
+  - io.github.monun:kommand:2.6.0
