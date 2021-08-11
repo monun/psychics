@@ -46,7 +46,7 @@ object PsychicItem {
 }
 
 var ItemStack.isPsychicbound: Boolean
-    get() = itemMeta.isPsychicbound
+    get() = itemMeta?.isPsychicbound ?: false
     set(value) {
         itemMeta = itemMeta.apply {
             isPsychicbound = value

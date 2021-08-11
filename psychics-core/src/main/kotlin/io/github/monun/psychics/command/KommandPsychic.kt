@@ -34,7 +34,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-internal object CommandPsychic {
+internal object KommandPsychic {
     private lateinit var plugin: PsychicsPlugin
     lateinit var manager: PsychicManager
 
@@ -48,7 +48,9 @@ internal object CommandPsychic {
             val psychicConceptArgument = dynamic { _, input ->
                 manager.getPsychicConcept(input)
             }.apply {
-                suggests(manager.psychicConceptsByName::keys)
+                suggests {
+                    suggest(manager.psychicConceptsByName.keys)
+                }
             }
             val abilityArgument = dynamic { context, input ->
                 context.source.playerOrNull?.let { player ->

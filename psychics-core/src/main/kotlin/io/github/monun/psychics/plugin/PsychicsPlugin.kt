@@ -21,7 +21,7 @@ import io.github.monun.kommand.kommand
 import io.github.monun.psychics.PsychicManager
 import io.github.monun.psychics.Psychics
 import io.github.monun.psychics.attribute.EsperStatistic
-import io.github.monun.psychics.command.CommandPsychic
+import io.github.monun.psychics.command.KommandPsychic
 import io.github.monun.psychics.damage.Damage
 import io.github.monun.tap.event.EntityEventManager
 import io.github.monun.tap.fake.FakeEntityServer
@@ -94,10 +94,10 @@ class PsychicsPlugin : JavaPlugin() {
     }
 
     private fun setupCommands() {
-        CommandPsychic.initModule(this, this.psychicManager)
+        KommandPsychic.initModule(this, this.psychicManager)
         kommand {
             register("psychics", "psy") {
-                CommandPsychic.register(this)
+                KommandPsychic.register(this)
             }
         }
     }
