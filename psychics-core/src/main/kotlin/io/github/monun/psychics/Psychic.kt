@@ -36,6 +36,7 @@ import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerEvent
@@ -406,6 +407,35 @@ class Psychic internal constructor(
     }
 
     /**
+     * Marker로 설정된 [org.bukkit.entity.ArmorStand]를 생성합니다.
+     *
+     * 능력이 비활성화 될 때 제거됩니다.
+     *
+     * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
+     * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
+     */
+    fun spawnMarker(location: Location): FakeEntity {
+        return spawnFakeEntity(location, ArmorStand::class.java).apply {
+            updateMetadata<ArmorStand> {
+                isMarker = true
+                isInvisible = true
+            }
+        }
+    }
+
+    /**
+     * Marker로 설정된 [org.bukkit.entity.ArmorStand]를 생성 후 인수로 받은 [FakeEntity]를 승객으로 설정합니다.
+     *
+     * 능력이 비활성화 될 때 제거됩니다.
+     *
+     * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
+     * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
+     */
+    fun marker(passenger: FakeEntity): FakeEntity {
+        return spawnMarker(passenger.location).apply { addPassenger(passenger) }
+    }
+
+    /**
      * 마나를 소모합니다.
      *
      * 전달한 양보다 적다면 소모되지 않습니다.
@@ -472,7 +502,8 @@ class Psychic internal constructor(
         channeling?.let { channel ->
             val remainingTime = channel.remainingTime
             // 시간을 -150 하여 서버 <-> 클라이언트 사이의 딜레이 최소화
-            castingBar.progress = (1.0 - max(0, remainingTime - 150).toDouble() / channel.ability.concept.castingTime.toDouble())
+            castingBar.progress =
+                (1.0 - max(0, remainingTime - 150).toDouble() / channel.ability.concept.castingTime.toDouble())
 
             if (remainingTime > 0L) {
                 channel.channel()

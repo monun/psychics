@@ -19,7 +19,7 @@ package io.github.monun.psychics.command
 
 import io.github.monun.invfx.openFrame
 import io.github.monun.kommand.KommandSource
-import io.github.monun.kommand.node.LiteralNode
+import io.github.monun.kommand.PluginKommand
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.PsychicConcept
 import io.github.monun.psychics.PsychicManager
@@ -34,17 +34,17 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-internal object KommandPsychic {
+internal object KommandPsychics {
     private lateinit var plugin: PsychicsPlugin
-    lateinit var manager: PsychicManager
+    private lateinit var manager: PsychicManager
 
-    internal fun initModule(plugin: PsychicsPlugin, manager: PsychicManager) {
+    fun register(plugin: PsychicsPlugin, manager: PsychicManager, kommand: PluginKommand) {
         this.plugin = plugin
         this.manager = manager
-    }
 
-    fun register(root: LiteralNode) {
-        root.apply {
+        kommand.register("psychics", "psy") {
+            permission("psychics.commands")
+
             val psychicConceptArgument = dynamic { _, input ->
                 manager.getPsychicConcept(input)
             }.apply {

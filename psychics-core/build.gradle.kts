@@ -1,5 +1,5 @@
 dependencies {
-    implementation("io.github.monun:kommand-api:2.6.0")
+    implementation("io.github.monun:kommand-api:2.6.1")
     implementation("io.github.monun:invfx-api:3.0.0")
 }
 
