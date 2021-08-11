@@ -50,13 +50,13 @@ abstract class Ability<T : AbilityConcept> {
 
             val times = max(0L, value)
             field = Times.current + times
-
-            val wand = concept.wand
-
-            if (wand != null) {
-                esper.player.setCooldown(wand.type, (times / 50L).toInt())
-            }
+            updateCooldown((value / 50L).toInt())
         }
+
+    internal fun updateCooldown(ticks: Int = (cooldownTime / 50L).toInt()) {
+        val wand = concept.wand
+        if (wand != null) esper.player.setCooldown(wand.type, ticks)
+    }
 
     var durationTime: Long = 0L
         get() {

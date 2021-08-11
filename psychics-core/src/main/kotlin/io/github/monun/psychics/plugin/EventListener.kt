@@ -18,6 +18,7 @@
 package io.github.monun.psychics.plugin
 
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import io.github.monun.psychics.*
 import io.github.monun.psychics.item.enchantability
 import io.github.monun.psychics.item.isPsychicbound
@@ -163,6 +164,7 @@ class EventListener(
         val inv = event.inventory
         val invType = event.inventory.type
 
+        @Suppress("USELESS_ELVIS")
         if (invType == InventoryType.GRINDSTONE) {
             event.result?.apply {
                 psionicsLevel = 0
@@ -179,6 +181,18 @@ class EventListener(
                        level++
 
                     psionicsLevel = min(5, level)
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerPostRespawn(event: PlayerPostRespawnEvent) {
+        val player = event.player
+        psychicManager.getEsper(player)?.let { esper ->
+            esper.psychic?.let { psychic ->
+                psychic.abilities.forEach { ability ->
+                    ability.updateCooldown()
                 }
             }
         }
