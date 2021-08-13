@@ -178,7 +178,7 @@ class Psychic internal constructor(
         updateManaBar()
 
         for (ability in abilities) {
-            ability.runCatching { onAttach() }
+            ability.runCatching { onAttach() }.onFailure { it.printStackTrace() }
         }
     }
 

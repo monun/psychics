@@ -236,7 +236,7 @@ class PsychicManager(
                 map[name] = psychicConcept
 
                 if (changed) {
-                    config.runCatching { save(psychicFile) }
+                    config.runCatching { save(psychicFile) }.onFailure { it.printStackTrace() }
                 }
             }.onFailure { exception ->
                 exception.printStackTrace()

@@ -247,7 +247,7 @@ open class AbilityConcept {
             template("healing", healing?.let { supplyStats(it) } ?: 0.0)
         }
 
-        runCatching { onRenderTooltip(tooltip, supplyStats) }
+        runCatching { onRenderTooltip(tooltip, supplyStats) }.onFailure { it.printStackTrace() }
         container.description.author?.let { author ->
             tooltip.footer(text().color(NamedTextColor.GRAY).content("by. ").append(text().content(author)).build())
         }

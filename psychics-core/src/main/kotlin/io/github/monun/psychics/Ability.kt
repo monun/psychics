@@ -100,6 +100,8 @@ abstract class Ability<T : AbilityConcept> {
 
         runCatching {
             onSave(config)
+        }.onFailure {
+            it.printStackTrace()
         }
     }
 
@@ -108,6 +110,8 @@ abstract class Ability<T : AbilityConcept> {
 
         runCatching {
             onLoad(config)
+        }.onFailure {
+            it.printStackTrace()
         }
     }
 
