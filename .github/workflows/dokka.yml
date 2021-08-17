@@ -15,6 +15,7 @@ jobs:
           java-version: 16
       - name: 문서 빌드
         run: |
+          dos2unix gradlew
           chmod +x gradlew
           ./gradlew dokkaJar
       - name: Github Pages 업로드
