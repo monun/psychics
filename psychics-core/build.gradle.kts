@@ -1,3 +1,7 @@
+plugins {
+    id("org.jetbrains.dokka") version "1.5.0"
+}
+
 dependencies {
     implementation("io.github.monun:kommand-api:2.6.2")
     implementation("io.github.monun:invfx-api:3.0.0")
