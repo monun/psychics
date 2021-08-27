@@ -1,0 +1,5 @@
+group: com.github.muqhc
+name: ${projectName}
+version: 0.0.1
+main: com.github.muqhc.psychics.ability.firetotem.FireTotem
+author: muqhc
