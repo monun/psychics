@@ -38,7 +38,7 @@ class AbilityConceptFangs : AbilityConcept() {
 
     init {
         cooldownTime = 500L
-        range = 16.0
+        range = 24.0
         cost = 20.0
         damage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 2.0)
         knockback = 0.5

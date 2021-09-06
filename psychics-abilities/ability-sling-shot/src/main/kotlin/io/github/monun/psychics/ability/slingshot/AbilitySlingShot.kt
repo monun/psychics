@@ -29,7 +29,7 @@ class AbilityConceptSlingShot : AbilityConcept() {
     var stoneSpeed = 4.0
 
     @Config
-    var stoneGravity = 0.05
+    var stoneGravity = 0.02
 
     @Config
     var stoneSize = 2.0
@@ -136,7 +136,8 @@ class AbilitySlingShot : Ability<AbilityConceptSlingShot>(), Listener {
 
                         result.hitEntity?.let { entity ->
                             if (entity is LivingEntity) {
-                                entity.psychicDamage()
+                                val knockback = if (entity.isOnGround) concept.knockback else 0.0
+                                entity.psychicDamage(knockback = knockback)
                             }
                         }
 

@@ -60,17 +60,16 @@ class AbilityConceptStormBreaker : AbilityConcept() {
     var axeGravity = 0.04
 
     @Config
-    var slowAmplifier = 1
+    var slowAmplifier = 3
 
     @Config
-    var slowDurationTicks = 40
+    var slowDurationTicks = 60
 
     init {
         type = AbilityType.ACTIVE
         range = 256.0
         cooldownTime = 10L * 1000L
         durationTime = 5L * 1000L
-        knockback = 2.0
         wand = ItemStack(Material.LIGHTNING_ROD).apply {
             editMeta {
                 addItemFlags(*ItemFlag.values())
