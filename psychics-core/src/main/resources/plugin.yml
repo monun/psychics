@@ -4,6 +4,6 @@ api-version: '1.17'
 version: $version
 author: Monun
 libraries:
-  - io.github.monun:tap:4.1.6
-  - io.github.monun:invfx:3.0.0
-  - io.github.monun:kommand:2.6.2
+  - io.github.monun:tap:4.1.9
+  - io.github.monun:invfx:3.0.1
+  - io.github.monun:kommand:2.6.6
