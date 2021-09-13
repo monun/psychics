@@ -32,6 +32,8 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
 import kotlin.math.max
 
+// 지속시간 이후 폭발하여 주위에 피해를 입힘
+// 사망시 두배 데미지
 @Name("bomber")
 class AbilityConceptBomber : AbilityConcept() {
     @Config

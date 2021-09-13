@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionType
 import kotlin.random.Random.Default.nextFloat
 
+// 화살을 발사시 직선으로 날아가는 화살 발사
 @Name("magic-archery")
 class AbilityConceptMagicArchery : AbilityConcept() {
     var arrowSize = 1.0

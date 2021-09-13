@@ -23,6 +23,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 import org.bukkit.inventory.ItemStack
 
+// 피 빨아먹음
 @Name("vampire")
 class AbilityConceptVampire : AbilityConcept() {
     @Config

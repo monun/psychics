@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import java.util.*
 
+// 전방으로 가시를 발사
 @Name("fangs")
 class AbilityConceptFangs : AbilityConcept() {
     @Config

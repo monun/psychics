@@ -36,6 +36,7 @@ import org.bukkit.util.Vector
 import kotlin.random.Random.Default.nextDouble
 import kotlin.random.Random.Default.nextFloat
 
+// 도끼를 던져 번개를 내리치고 순간이동 할 수 있음
 @Name("storm-breaker")
 class AbilityConceptStormBreaker : AbilityConcept() {
     @Config

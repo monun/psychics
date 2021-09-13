@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-// 지정한 대상에게 폭죽 효과와 피해를 입히는 능력
+// 지속시간동안 넉백무시, 받는 데미지 감소
 @Name("berserker")
 class AbilityConceptBerserker : AbilityConcept() {
 
