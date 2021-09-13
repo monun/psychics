@@ -15,6 +15,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
+import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -68,10 +69,13 @@ class AbilityVampire : Ability<AbilityConceptVampire>(), Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     @TargetEntity(EntityProvider.EntityDamageByEntity.Damager::class)
     fun onAttack(event: EntityDamageByEntityEvent) {
+        val entity = event.entity
+
+        if (entity is ArmorStand) return
+
         val concept = concept
         val damage = event.finalDamage
         val healing = damage * concept.healByDamage
-        val entity = event.entity
         val location = entity.location.apply { y = entity.boundingBox.maxY }
         val player = esper.player
         val playerLocation = player.location
