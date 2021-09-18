@@ -244,6 +244,7 @@ class PowerOfFlame: ActiveAbility<PowerOfFlameConcept>() {
                 esper.player.location,
                 attackData["knockback"]!!
             )
+            target.fireTicks = concept.dotDamagePeriodTicks
             psychic.consumeMana(concept.flameCostPerTickForOne*count)
         }
     }
