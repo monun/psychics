@@ -264,7 +264,8 @@ $dokka.location:io.github.monun.psychics/ActiveAbility.WandAction.RIGHT_CLICK/na
 $dokka.location:io.github.monun.psychics/ActiveAbility.WandAction.RIGHT_CLICK/ordinal/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/-wand-action/-r-i-g-h-t_-c-l-i-c-k/ordinal.html
 $dokka.location:io.github.monun.psychics/ActiveAbility.WandAction///PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/-wand-action/index.html
 $dokka.location:io.github.monun.psychics/ActiveAbility///PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/index.html
-$dokka.location:io.github.monun.psychics/ActiveAbility/ActiveAbility/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/-active-ability.html
+$dokka.location:io.github.monun.psychics/ActiveAbility/ActiveAbility/#kotlin.Array[io.github.monun.psychics.ActiveAbility.WandAction]/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/-active-ability.html
+$dokka.location:io.github.monun.psychics/ActiveAbility/allowActions/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/allow-actions.html
 $dokka.location:io.github.monun.psychics/ActiveAbility/onCast/#org.bukkit.event.player.PlayerEvent#io.github.monun.psychics.ActiveAbility.WandAction#kotlin.Any?/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/on-cast.html
 $dokka.location:io.github.monun.psychics/ActiveAbility/onChannel/#io.github.monun.psychics.Channel/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/on-channel.html
 $dokka.location:io.github.monun.psychics/ActiveAbility/onInterrupt/#io.github.monun.psychics.Channel/PointingToDeclaration/psychics-core/io.github.monun.psychics/-active-ability/on-interrupt.html
@@ -347,6 +348,8 @@ $dokka.location:io.github.monun.psychics/Psychics/fakeEntityServer/#/PointingToD
 $dokka.location:io.github.monun.psychics/Psychics/logger/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-psychics/logger.html
 $dokka.location:io.github.monun.psychics/Psychics/plugin/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-psychics/plugin.html
 $dokka.location:io.github.monun.psychics/Psychics/psychicManager/#/PointingToDeclaration/psychics-core/io.github.monun.psychics/-psychics/psychic-manager.html
+$dokka.location:io.github.monun.psychics/TestResult.FailedAction///PointingToDeclaration/psychics-core/io.github.monun.psychics/-test-result/-failed-action/index.html
+$dokka.location:io.github.monun.psychics/TestResult.FailedAction/message/#io.github.monun.psychics.Ability[*]/PointingToDeclaration/psychics-core/io.github.monun.psychics/-test-result/-failed-action/message.html
 $dokka.location:io.github.monun.psychics/TestResult.FailedChannel///PointingToDeclaration/psychics-core/io.github.monun.psychics/-test-result/-failed-channel/index.html
 $dokka.location:io.github.monun.psychics/TestResult.FailedChannel/message/#io.github.monun.psychics.Ability[*]/PointingToDeclaration/psychics-core/io.github.monun.psychics/-test-result/-failed-channel/message.html
 $dokka.location:io.github.monun.psychics/TestResult.FailedCooldown///PointingToDeclaration/psychics-core/io.github.monun.psychics/-test-result/-failed-cooldown/index.html
