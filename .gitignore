@@ -17,4 +17,4 @@ build/
 .buildtools/
 
 # just Suggest Contents
-.#suggests/
+/#suggests/
