@@ -64,7 +64,7 @@ class AbilitySlingShot : Ability<AbilityConceptSlingShot>(), Listener {
                     val result = test()
 
                     if (result != TestResult.Success) {
-                        player.sendActionBar(result.message(this))
+                        result.message(this)?.let { player.sendActionBar(it) }
                         return
                     }
 

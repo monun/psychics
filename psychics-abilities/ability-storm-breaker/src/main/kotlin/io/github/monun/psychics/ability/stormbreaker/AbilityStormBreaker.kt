@@ -191,7 +191,7 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
                             val result = test()
 
                             if (result != TestResult.Success) {
-                                esper.player.sendActionBar(result.message(this@AbilityStormBreaker))
+                                result.message(this@AbilityStormBreaker)?.let { esper.player.sendActionBar(it) }
                                 return
                             }
 

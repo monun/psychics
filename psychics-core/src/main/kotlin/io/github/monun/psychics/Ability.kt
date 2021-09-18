@@ -34,6 +34,7 @@ import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerEvent
+import java.util.*
 import kotlin.math.max
 
 abstract class Ability<T : AbilityConcept> {
@@ -216,7 +217,9 @@ abstract class Ability<T : AbilityConcept> {
 
 }
 
-abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
+abstract class ActiveAbility<T : AbilityConcept>(vararg allowActions: WandAction = WandAction.values()) : Ability<T>() {
+    val allowActions: Set<WandAction> = EnumSet.copyOf(allowActions.toList())
+
     var targeter: (() -> Any?)? = null
 
     override fun test(): TestResult {
@@ -232,6 +235,8 @@ abstract class ActiveAbility<T : AbilityConcept> : Ability<T>() {
         cost: Double = concept.cost,
         targeter: (() -> Any?)? = this.targeter
     ): TestResult {
+        if (action !in allowActions) return TestResult.FailedAction
+
         val result = test()
 
         if (result === TestResult.Success) {
@@ -326,5 +331,9 @@ sealed class TestResult {
             text().content("시전중인 스킬이 있습니다").decorate(TextDecoration.BOLD).build()
     }
 
-    abstract fun message(ability: Ability<*>): Component
+    object FailedAction : TestResult() {
+        override fun message(ability: Ability<*>) = null
+    }
+
+    abstract fun message(ability: Ability<*>): Component?
 }
