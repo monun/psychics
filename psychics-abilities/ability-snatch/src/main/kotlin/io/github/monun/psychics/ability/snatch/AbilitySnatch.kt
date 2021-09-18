@@ -24,7 +24,7 @@ class AbilityConceptSnatch : AbilityConcept() {
     var snatchHeight = 3.0
 
     init {
-        cooldownTime = 40000L
+        cooldownTime = 20000L
         castingTime = 1500L
         range = 64.0
         wand = ItemStack(Material.FISHING_ROD)
