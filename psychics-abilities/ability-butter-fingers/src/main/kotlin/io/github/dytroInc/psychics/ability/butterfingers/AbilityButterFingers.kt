@@ -31,7 +31,7 @@ class AbilityConceptButterFingers : AbilityConcept() {
     }
 }
 
-class AbilityButterFingers : ActiveAbility<AbilityConceptButterFingers>(), Listener {
+class AbilityButterFingers : ActiveAbility<AbilityConceptButterFingers>() {
     companion object {
         fun dropItem(living: LivingEntity, item: ItemStack?) {
             if (item == null) return
@@ -41,11 +41,6 @@ class AbilityButterFingers : ActiveAbility<AbilityConceptButterFingers>(), Liste
             item.amount = 0
         }
     }
-
-    override fun onEnable() {
-        psychic.registerEvents(this)
-    }
-
     override fun onInitialize() {
         targeter = {
             val player = esper.player
@@ -90,7 +85,6 @@ class AbilityButterFingers : ActiveAbility<AbilityConceptButterFingers>(), Liste
             override fun run() {
                 target.inventory.contents.forEach { dropItem(target, it) }
             }
-
         }, 100L)
     }
 
