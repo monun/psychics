@@ -23,10 +23,10 @@ import kotlin.random.Random
 @Name("gambler")
 class AbilityConceptGambler : AbilityConcept() {
     @Config
-    var teleportPercentage = 50.0f
+    var teleportPercentage = 70.0f
 
     @Config
-    var percentage = 50.0f
+    var percentage = 75.0f
 
     @Config
     var failDamage = Damage.Companion.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 2.0)
