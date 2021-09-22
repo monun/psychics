@@ -6,6 +6,9 @@ import io.github.monun.psychics.Channel
 import io.github.monun.psychics.TestResult
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
+import io.github.monun.tap.event.EntityProvider
+import io.github.monun.tap.event.TargetEntity
+import io.github.monun.tap.fake.FakeEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.*
