@@ -12,6 +12,7 @@ import io.github.monun.tap.fake.FakeEntity
 import net.kyori.adventure.text.Component.text
 import org.bukkit.*
 import org.bukkit.entity.Item
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -29,10 +30,7 @@ class AbilityConceptGambler : AbilityConcept() {
     var percentage = 75.0f
 
     @Config
-    var failDamage = Damage.Companion.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 2.0)
-
-    @Config
-    var successDamage = 2.0
+    var teleportFailDamage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 2.0)
 
     init {
         cooldownTime = 10000L
@@ -44,6 +42,7 @@ class AbilityConceptGambler : AbilityConcept() {
             text("일정 확률로 랜덤 플레이어에게 TP"),
             text("또는 피해를 입습니다.")
         )
+        damage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 1.0)
         wand = ItemStack(Material.GHAST_TEAR)
     }
 }
@@ -51,17 +50,21 @@ class AbilityConceptGambler : AbilityConcept() {
 class AbilityGambler : Ability<AbilityConceptGambler>() {
     var teleportUsed = false
     var pearl: FakeEntity? = null
+    var ready = true
 
     inner class GamblerListener : Listener {
         @EventHandler(ignoreCancelled = true)
         @TargetEntity(EntityProvider.EntityDamageByEntity.Damager::class)
         fun onEntityDamage(event: EntityDamageByEntityEvent) {
-            if (durationTime > 0) {
-                if (Random.nextDouble(0.0, 100.0) > concept.percentage) {
-                    event.damage *= concept.successDamage
-                } else {
-                    event.isCancelled = true
-                    esper.player.psychicDamage(concept.failDamage)
+            if (durationTime > 0 && event.entity is LivingEntity) {
+                concept.damage?.let {
+                    if (Random.nextDouble(0.0, 100.0) < concept.percentage) {
+                        event.isCancelled = true
+                        (event.entity as LivingEntity).psychicDamage(it)
+                    } else {
+                        event.isCancelled = true
+                        esper.player.psychicDamage(it)
+                    }
                 }
             }
         }
@@ -87,6 +90,7 @@ class AbilityGambler : Ability<AbilityConceptGambler>() {
                         updateCooldown(cooldownTicks)
                         rotation = 0
                         durationTime = concept.durationTime
+                        ready = false
                         esper.player.world.playSound(
                             esper.player.location,
                             Sound.ENTITY_PLAYER_LEVELUP,
@@ -121,10 +125,8 @@ class AbilityGambler : Ability<AbilityConceptGambler>() {
 
     fun randomTeleport() {
         val concept = concept
-
-        val p = Bukkit.getOnlinePlayers().filter { it != esper.player }.shuffled()
-
-        if (Random.nextDouble(0.0, 100.0) > concept.teleportPercentage && p.isNotEmpty()) {
+        val p = Bukkit.getOnlinePlayers().filter { it != esper.player && it.gameMode != GameMode.SPECTATOR }.shuffled()
+        if (Random.nextDouble(0.0, 100.0) < concept.teleportPercentage && p.isNotEmpty()) {
             val pl = p.first()
             esper.player.world.playEffect(esper.player.location, Effect.ENDER_SIGNAL, 0)
             esper.player.teleport(pl)
@@ -137,11 +139,42 @@ class AbilityGambler : Ability<AbilityConceptGambler>() {
                 1.0f
             )
         } else {
-            concept.failDamage.let { damage ->
-                val player = esper.player
-                player.psychicDamage(damage)
-            }
+            val player = esper.player
+            player.psychicDamage(concept.teleportFailDamage)
+            player.world.playSound(
+                esper.player.location,
+                Sound.BLOCK_BEACON_DEACTIVATE,
+                SoundCategory.PLAYERS,
+                1.0f,
+                1.0f
+            )
         }
+
+        breakPearl()
+    }
+
+    private fun breakPearl() {
+        pearl?.apply {
+            location.world.spawnParticle(
+                Particle.ITEM_CRACK,
+                location,
+                10,
+                0.0,
+                0.0,
+                0.0,
+                0.5,
+                (bukkitEntity as Item).itemStack
+            )
+            esper.player.world.playSound(
+                location,
+                Sound.BLOCK_AMETHYST_BLOCK_BREAK,
+                SoundCategory.PLAYERS,
+                1.0f,
+                1.0f
+            )
+            remove()
+        }
+        pearl = null
     }
 
     override fun onEnable() {
@@ -153,7 +186,7 @@ class AbilityGambler : Ability<AbilityConceptGambler>() {
     }
 
     private fun tick() {
-        if (durationTime > 0) {
+        if (durationTime > 0L) {
             val loc = esper.player.eyeLocation.clone().apply {
                 yaw = (rotation * 10).toFloat()
                 pitch = 0.0f
@@ -182,21 +215,14 @@ class AbilityGambler : Ability<AbilityConceptGambler>() {
                     y += 3
                 })
             }
-        } else {
+        } else if (durationTime == 0L) {
             rotation = 0
             teleportUsed = false
-            pearl?.apply {
-                    location.world.spawnParticle(Particle.ITEM_CRACK, location, 10, 0.0, 0.0, 0.0, 0.5, (bukkitEntity as Item).itemStack)
-                esper.player.world.playSound(
-                    location,
-                    Sound.BLOCK_AMETHYST_BLOCK_BREAK,
-                    SoundCategory.PLAYERS,
-                    1.0f,
-                    1.0f
-                )
-                remove()
+            breakPearl()
+            if (!ready) {
+                esper.player.sendMessage(text("${ChatColor.GREEN}${concept.displayName} ${ChatColor.GOLD} 능력 사용이 끝났습니다."))
+                ready = true
             }
-            pearl = null
         }
     }
 }
