@@ -1,0 +1,5 @@
+group: ${group}
+name: ${projectName}
+version: ${version}
+main: io.github.sincostan1122.AbilityFlash
+author: $author
