@@ -1,4 +1,4 @@
-package io.github.sincostan1122.psychics.ability.teleport
+package io.github.sincostan1122.psychics.ability.flash
 
 
 import io.github.monun.psychics.ActiveAbility

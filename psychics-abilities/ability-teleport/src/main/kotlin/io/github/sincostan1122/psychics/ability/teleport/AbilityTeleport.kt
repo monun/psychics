@@ -22,7 +22,7 @@ class AbilityConceptTeleport : AbilityConcept() {
     var isportalon = 0
 
     init {
-        cooldownTime = 1200000
+        cooldownTime = 1200000L
         wand = ItemStack(Material.GOLDEN_HOE)
         displayName = "순간이동"
 
@@ -45,7 +45,7 @@ class AbilityTeleport : ActiveAbility<AbilityConceptTeleport>(), Listener {
                 isVisible = false
             }
         }
-        val world = playerloc().world
+        val world = teleportloc().world
         psychic.runTaskTimer({
             if (concept.isportalon == 1) {
                 world.spawnParticle(Particle.DRIPPING_OBSIDIAN_TEAR, teleportloc(), 5)
