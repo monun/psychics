@@ -2,8 +2,6 @@ package io.github.sincostan1122.psychics.ability.teleport
 
 import io.github.monun.psychics.ActiveAbility
 import io.github.monun.psychics.AbilityConcept
-import io.github.monun.psychics.attribute.EsperAttribute
-import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity

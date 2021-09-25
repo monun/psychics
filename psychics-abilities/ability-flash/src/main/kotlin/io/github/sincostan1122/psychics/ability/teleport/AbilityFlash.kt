@@ -5,10 +5,6 @@ import io.github.monun.psychics.ActiveAbility
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
-import io.github.monun.psychics.damage.Damage
-import io.github.monun.psychics.damage.DamageType
-import io.github.monun.psychics.util.Times
-import io.github.monun.psychics.util.hostileFilter
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity
@@ -17,14 +13,9 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Entity
-import org.bukkit.entity.EvokerFangs
-import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.BoundingBox
-import java.util.*
 
 
 @Name("Flash")
