@@ -45,11 +45,16 @@ class AbilityMirror : ActiveAbility<AbilityConceptMirror>(), Listener {
 
     override fun onEnable() {
         psychic.registerEvents(this)
-        psychic.runTaskTimer(this::durationEffect, 0L, 1L)
+
     }
 
-
+    private fun particleloc(): Location {
+        return esper.player.location
+    }
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
+        val world = particleloc().world
+        world.spawnParticle(Particle.SPELL_INSTANT, particleloc(), 5)
+
 
         esper.player.addPotionEffect(
             PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, (concept.durationTime / 50.0).toInt(), 5, false, false, false)
@@ -76,20 +81,11 @@ class AbilityMirror : ActiveAbility<AbilityConceptMirror>(), Listener {
                 val location = player.location
                 val world = location.world
 
-                world.spawnParticle(Particle.FIREWORKS_SPARK, location.x, location.y, location.z, 5, 0.25, 0.0, 0.25, 0.0, null, true)
+                world.spawnParticle(Particle.LAVA, particleloc(), 5)
             }
         }
         cooldownTime = concept.cooldownTime
 
-    }
-    private fun durationEffect() {
-        if (durationTime <= 0L) return
-
-        val player = esper.player
-        val location = player.location
-        val world = location.world
-
-        world.spawnParticle(Particle.LAVA, location.x, location.y, location.z, 5, 0.25, 0.0, 0.25, 0.0, null, true)
     }
 
 
