@@ -1,4 +1,4 @@
-package io.github.sincostan1122
+package io.github.sincostan1122.psychics.ability.teleport
 
 import io.github.monun.psychics.ActiveAbility
 import io.github.monun.psychics.AbilityConcept
