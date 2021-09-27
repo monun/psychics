@@ -1,0 +1,5 @@
+group: com.github.muqhc
+name: ${projectName}
+version: ${version}
+main: com.github.muqhc.psychics.ability.${packageName}.Ability${abilityName.capitalize()}
+author: muqhc

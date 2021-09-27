@@ -38,15 +38,12 @@ class AbilityLoader internal constructor() {
 
         val classLoader = AbilityClassLoader(this, file, javaClass.classLoader)
 
-        val log = Bukkit.getLogger()
         try {
-            log.info(" <Ability> Loading Ability :> ${description.main}")
             val abilityClass =
                 Class.forName(description.main, true, classLoader).asSubclass(Ability::class.java) //메인 클래스 찾기
             val abilityKClass = abilityClass.kotlin
             val conceptClassName =
                 abilityKClass.supertypes.first().arguments.first().type.toString().removePrefix("class ").removeSuffix("!")
-            log.info(" <AbilityConcept> Loading AbilityConcept :> $conceptClassName")
             val conceptClass = Class.forName(conceptClassName, true, classLoader).asSubclass(AbilityConcept::class.java)
 
             testCreateInstance(abilityClass)
@@ -92,8 +89,6 @@ class AbilityLoader internal constructor() {
 }
 
 private fun <T> testCreateInstance(clazz: Class<T>): T {
-    val log = Bukkit.getLogger()
-    log.info(clazz.toString())
     try {
         return clazz.getConstructor().newInstance()
     } catch (e: Exception) {

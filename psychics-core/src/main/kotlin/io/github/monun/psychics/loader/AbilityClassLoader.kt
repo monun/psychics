@@ -17,8 +17,6 @@
 
 package io.github.monun.psychics.loader
 
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import java.io.File
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
@@ -34,12 +32,9 @@ internal class AbilityClassLoader(
 
     @Throws(ClassNotFoundException::class)
     override fun findClass(name: String): Class<*> {
-        val log = Bukkit.getLogger()
-        log.info(" -Abilities- Loading Class - $name")
         return try {
             findLocalClass(name)
         } catch (e: ClassNotFoundException) {
-            log.info("${ChatColor.AQUA}  >>Trying loading $name at Global")
             loader.findClass(name, this)
         }
     }
