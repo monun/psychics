@@ -23,7 +23,7 @@ import net.md_5.bungee.api.ChatColor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
-class Damage internal constructor(
+class Damage(
     val type: DamageType,
     val stats: EsperStatistic
 ) : ConfigurationSerializable {

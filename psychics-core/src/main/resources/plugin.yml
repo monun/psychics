@@ -7,3 +7,4 @@ libraries:
   - io.github.monun:tap:4.1.9
   - io.github.monun:invfx:3.0.1
   - io.github.monun:kommand:2.6.6
+  - org.scala-lang:scala-library:2.13.6

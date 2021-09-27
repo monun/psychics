@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation("io.github.monun:kommand-api:2.6.6")
     implementation("io.github.monun:invfx-api:3.0.1")
+    implementation(kotlin("script-runtime"))
 }
 
 tasks {

@@ -15,3 +15,5 @@ build/
 
 # BuildTools
 .buildtools/
+/runserver.lnk
+/#suggests/

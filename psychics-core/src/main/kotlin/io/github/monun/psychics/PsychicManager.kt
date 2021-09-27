@@ -138,6 +138,7 @@ class PsychicManager(
 
         for ((file, description) in descriptions) {
             abilityLoader.runCatching {
+                logger.info("Loading Ability ${description.artifactId} : ${description.main}")
                 map[description.artifactId] = load(file, description)
             }.onFailure { exception: Throwable ->
                 exception.printStackTrace()
