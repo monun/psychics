@@ -92,17 +92,15 @@ class AbilitySampleScala extends ActiveAbility[AbilityConceptSampleScala] with L
         })
     }
 
-    override def onCast(event: PlayerEvent, action: WandAction, target: Any): Unit = {
+    override def onCast(event: PlayerEvent, action: WandAction, target: Any): Unit = target match {
+        case target: LivingEntity =>
+            val concept = getConcept
 
-        if (!target.isInstanceOf[LivingEntity]) return ;
+            psychic consumeMana concept.getCost
+            this setCooldownTime concept.getCooldownTime
 
-        val concept = getConcept
-
-        psychic consumeMana concept.getCost
-        this setCooldownTime concept.getCooldownTime
-
-        scala_psychicDamage_simple(this, target.asInstanceOf[LivingEntity])
-        playPsychicEffect(target.asInstanceOf[LivingEntity])
+            scala_psychicDamage_simple(this, target)
+            playPsychicEffect(target)
 
     }
 
