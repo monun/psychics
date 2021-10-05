@@ -1,0 +1,74 @@
+name: Bug Report (버그 제보)
+description: Report a Bug (버그 제보)
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        이 양식은 **질문을 위한 양식이 아니며**, 버그 제보를 위한 양식입니다.
+        버그를 제보하기 전, 검색을 통해 다른 Issue가 있는지, 또는 그것을 해결하는 Pull Request가 있는지 확인해 주세요.
+  - type: checkboxes
+    id: double-check
+     attributes:
+      label: Issue Duplicate
+      description: 다른 Issue가 있는지 확인해 주세요.
+      options:
+        - label: 이 버그에 대한 다른 Issue가 없는 것을 확인했습니다.
+          required: true
+  - type: markdown
+    attributes:
+      value: \#\# Environment (개발 환경)
+  - type: input
+    id: os
+    attributes:
+      label: 개발 OS
+      description: 개발하는 OS 버전을 입력해 주세요.
+      placeholder: Windows 10 Pro x64, Arch Linux, etc...
+  - type: input
+    id: jdk
+    attributes:
+      label: 개발 JDK
+      description: 개발하는 JDK 버전을 입력해 주세요.
+      placeholder: JDK 버전은 java -version 을 명령 프롬포트(또는 터미널)에 입력하는 것으로 확인 가능합니다.
+  - type: input
+    id: mcver
+    attributes:
+      label: 개발 마인크래프트 버전
+      description: 버그에 사용된 마인크래프트 버전을 입력해 주세요.
+      placeholder: 1.17.1, 1.17, etc...
+  - type: markdown
+    attributes:
+      value: \#\# Bug
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 어떤 버그가 발생했나요?
+      description: | 
+        발생한 버그를 적어주세요.
+        
+        스크린샷은 이곳에 추가해 주세요. 이곳에 끌어넣으면 스크린샷을 추가할 수 있습니다.
+      placeholder: 자세히 적어주세요. 안된다고만 하는 것은 도움이 되지 않습니다.
+  - type: textarea
+    id: expected
+    attributes:
+      label: 어떻게 작동해야 하나요?
+      description: 예상된 움직임을 적어주세요.
+      placeholder: 명확하고 간결하게 적어주세요.
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현하기 위한 과정이 무엇인가요?
+      description: 재현하기 위한 과정을 적어주세요.
+      placeholder: 1. 2. 3. 과 같이 적어주세요.
+  - type: textarea
+    id: sourcecode
+    attributes:
+      label: 소스코드가 무엇인가요?
+      description: 실행 시도한 소스 코드를 써주세요.
+      placeholder: yml, kts 파일도 포함됩니다 (필요시)
+  - type: textarea
+    id: add
+    attributes:
+      label: 추가적인 정보가 있냐요?
+      description: 추가적인 정보를 입력해 주세요..
+      placeholder: 여기에 입력해 주세요.
