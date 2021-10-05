@@ -9,12 +9,12 @@ body:
         버그를 제보하기 전, 검색을 통해 다른 Issue가 있는지, 또는 그것을 해결하는 Pull Request가 있는지 확인해 주세요.
   - type: checkboxes
     id: double-check
-     attributes:
-      label: Issue Duplicate
-      description: 다른 Issue가 있는지 확인해 주세요.
-      options:
-        - label: 이 버그에 대한 다른 Issue가 없는 것을 확인했습니다.
-          required: true
+    attributes:
+     label: Issue Duplicate
+     description: 다른 Issue가 있는지 확인해 주세요.
+     options:
+       - label: 이 버그에 대한 다른 Issue가 없는 것을 확인했습니다.
+         required: true
   - type: markdown
     attributes:
       value: \#\# Environment (개발 환경)
