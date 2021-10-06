@@ -37,7 +37,6 @@ subprojects {
         implementation(kotlin("reflect"))
 
         implementation("io.github.monun:tap-api:4.1.9")
-        implementation("com.google.guava:guava:30.1.1-jre")
         implementation("org.scala-lang:scala-library:2.13.6")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")

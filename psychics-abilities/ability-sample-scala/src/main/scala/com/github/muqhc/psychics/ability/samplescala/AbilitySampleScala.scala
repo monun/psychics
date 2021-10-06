@@ -62,7 +62,7 @@ class AbilityConceptSampleScala extends AbilityConcept {
 
 }
 
-class AbilitySampleScala extends ActiveAbility[AbilityConceptSampleScala] with Listener {
+class AbilitySampleScala extends ActiveAbility[AbilityConceptSampleScala] {
 
     def esper: Esper = getEsper
     def concept: AbilityConceptSampleScala = getConcept
