@@ -114,7 +114,6 @@ class AbilityParrying : Ability<AbilityConceptParrying>(), Listener {
                         )
                     }
                 }
-                esper.player.sendMessage(damageAmount.toString())
                 esper.player.addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,
                     (concept.resistanceTime/50).toInt(),100,false,false,false))
                 durationTime = 0
