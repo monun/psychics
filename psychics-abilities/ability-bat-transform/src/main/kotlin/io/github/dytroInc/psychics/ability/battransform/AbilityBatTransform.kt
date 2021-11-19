@@ -3,6 +3,7 @@ package io.github.dytroInc.psychics.ability.battransform
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.AbilityType
 import io.github.monun.psychics.ActiveAbility
+import io.github.monun.psychics.TestResult
 import io.github.monun.tap.config.Name
 import io.github.monun.tap.fake.FakeEntity
 import net.kyori.adventure.text.Component.text
@@ -22,7 +23,7 @@ import org.bukkit.potion.PotionEffectType
 class AbilityConceptBatTransform : AbilityConcept() {
     init {
         type = AbilityType.COMPLEX
-        cooldownTime = 60000L
+        cooldownTime = 30000L
         durationTime = 10000L
         cost = 45.0
         description = listOf(
@@ -79,13 +80,13 @@ class AbilityBatTransform : ActiveAbility<AbilityConceptBatTransform>(), Listene
 
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val player = event.player
+        if (!psychic.consumeMana(concept.cost)) return player.sendActionBar(TestResult.FailedCost.message(this))
         cooldownTime = concept.cooldownTime
         player.sendActionBar(text("박쥐로 변신했습니다.").color(NamedTextColor.DARK_RED))
         player.allowFlight = true
         player.isFlying = true
         player.isInvulnerable = true
         time = (concept.durationTime / 50).toInt()
-        psychic.consumeMana(concept.cost)
         player.addPotionEffects(
             listOf(
                 PotionEffect(

@@ -34,7 +34,7 @@ class AbilityConceptBard : AbilityConcept() {
             text("근처 아군들에게 음악을 연주해서 행복함을 느끼게 합니다.")
         )
         wand = ItemStack(Material.STICK)
-        healing = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 8.0)
+        healing = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 15.0)
         displayName = "음유시인"
     }
 
@@ -45,7 +45,7 @@ class AbilityConceptBard : AbilityConcept() {
                 .append(
                     text()
                         .color(NamedTextColor.WHITE)
-                        .content("체력을 ${stats(healing!!)}만큼 치유하고 속도 ${speedAmplifier}를 ${durationTime / 1000.0}초 동안 받습니다.")
+                        .content("체력을 치유하고 속도 ${speedAmplifier}를 ${durationTime / 1000.0}초 동안 받습니다.")
                 )
                 .build()
         )

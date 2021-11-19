@@ -3,6 +3,7 @@ package io.github.dytroInc.psychics.ability.icesummoner
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.ActiveAbility
 import io.github.monun.psychics.PsychicProjectile
+import io.github.monun.psychics.TestResult
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
@@ -18,7 +19,9 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.LivingEntity
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -46,7 +49,8 @@ class AbilityConceptIceSummoner : AbilityConcept() {
         description = listOf(
             text("우클릭 씨에 보는 방향으로 투사체를 날립니다."),
             text("투사체가 적중한 곳의 주위 블록들은 얼려지고"),
-            text("주위 엔티티들은 ${maxFrozenTime}초 동안 얼려집니다.")
+            text("주위 엔티티들은 ${maxFrozenTime}초 동안 얼려집니다."),
+            text("얼린 엔티티들은 당신에게 피해를 못 줍니다.")
         )
         displayName = "얼음술사"
         wand = ItemStack(Material.STICK)
@@ -72,8 +76,8 @@ class AbilityIceSummoner : ActiveAbility<AbilityConceptIceSummoner>(), Listener 
 
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val player = event.player
+        if (!psychic.consumeMana(concept.cost)) return player.sendActionBar(TestResult.FailedCost.message(this))
         cooldownTime = concept.cooldownTime
-        psychic.consumeMana(concept.cost)
         frozenEntities.clear()
         frozenTime = (concept.maxFrozenTime * 20.0).toInt()
         val location = player.eyeLocation
@@ -107,6 +111,11 @@ class AbilityIceSummoner : ActiveAbility<AbilityConceptIceSummoner>(), Listener 
             frozenTime--
             if (frozenTime == 0) frozenEntities.clear()
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onDamage(event: EntityDamageByEntityEvent) {
+        if (event.damager.uniqueId in frozenEntities) event.isCancelled = true
     }
 
     inner class IceProjectile : PsychicProjectile(1200, concept.range) {
@@ -155,7 +164,6 @@ class AbilityIceSummoner : ActiveAbility<AbilityConceptIceSummoner>(), Listener 
                                         mutableListOf(
                                             PotionEffect(PotionEffectType.SLOW, time, 100),
                                             PotionEffect(PotionEffectType.SLOW_DIGGING, time, 100),
-                                            PotionEffect(PotionEffectType.WEAKNESS, time, 100),
                                         )
                                     )
                                 }

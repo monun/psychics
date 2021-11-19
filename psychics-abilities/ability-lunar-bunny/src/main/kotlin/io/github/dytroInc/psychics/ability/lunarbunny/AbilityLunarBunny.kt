@@ -3,6 +3,7 @@ package io.github.dytroInc.psychics.ability.lunarbunny
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.AbilityType
 import io.github.monun.psychics.ActiveAbility
+import io.github.monun.psychics.TestResult
 import io.github.monun.tap.config.Name
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -18,12 +19,12 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-// 랜덤 능력을 주는 송편을 만드는 능력
+// 랜덤 효과를 주는 송편을 만드는 능력
 @Name("lunar-bunny")
 class AbilityConceptLunarBunny : AbilityConcept() {
     init {
-        cooldownTime = 20000
-        durationTime = 10000
+        cooldownTime = 20000L
+        durationTime = 10000L
         displayName = "달토끼"
         type = AbilityType.COMPLEX
         wand = ItemStack(Material.WOODEN_HOE).apply {
@@ -39,36 +40,37 @@ class AbilityConceptLunarBunny : AbilityConcept() {
 }
 
 class AbilityLunarBunny : ActiveAbility<AbilityConceptLunarBunny>(), Listener {
+    companion object {
+        private val ricecake = ItemStack(Material.WHITE_DYE).apply {
+            itemMeta = itemMeta?.apply {
+                displayName(
+                    text().color(NamedTextColor.YELLOW).content("송편").decoration(TextDecoration.ITALIC, false).build()
+                )
+            }
+            lore(
+                listOf(
+                    text()
+                        .content("우클릭으로 먹으면 랜덤 버프를 받습니다. [달토끼 능력 소유자 한정]")
+                        .color(NamedTextColor.WHITE)
+                        .decoration(TextDecoration.ITALIC, false)
+                        .build()
+                )
+            )
+        }
+
+        private val effects = listOf(
+            PotionEffectType.INCREASE_DAMAGE, // 힘
+            PotionEffectType.DAMAGE_RESISTANCE, // 저항
+            PotionEffectType.REGENERATION, // 재생
+        )
+    }
 
     override fun onEnable() {
         psychic.registerEvents(this)
     }
 
-    private val ricecake = ItemStack(Material.WHITE_DYE).apply {
-        itemMeta = itemMeta?.apply {
-            displayName(
-                text().color(NamedTextColor.YELLOW).content("송편").decoration(TextDecoration.ITALIC, false).build()
-            )
-        }
-        lore(
-            listOf(
-                text()
-                    .content("우클릭으로 먹으면 랜덤 버프를 받습니다.")
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false)
-                    .build()
-            )
-        )
-    }
-    private val effects = listOf(
-        PotionEffectType.INCREASE_DAMAGE, // 힘
-        PotionEffectType.DAMAGE_RESISTANCE, // 저항
-        PotionEffectType.REGENERATION, // 재생
-    )
-
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
-        val concept = concept
-        psychic.consumeMana(concept.cost)
+        if (!psychic.consumeMana(concept.cost)) return esper.player.sendActionBar(TestResult.FailedCost.message(this))
         cooldownTime = concept.cooldownTime
         event.player.inventory.addItem(ricecake)
 

@@ -2,6 +2,7 @@ package io.github.dytroInc.psychics.ability.timerewind
 
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.ActiveAbility
+import io.github.monun.psychics.TestResult
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 import net.kyori.adventure.text.Component.text
@@ -47,34 +48,37 @@ class AbilityTimeRewind : ActiveAbility<AbilityConceptTimeRewind>() {
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val player = event.player
         cooldownTime = concept.cooldownTime
-        psychic.consumeMana(concept.cost)
-        val (health, location) = link.first
-        player.health = health
-        player.addPotionEffect(
-            PotionEffect(
-                PotionEffectType.DAMAGE_RESISTANCE,
-                20, 200, false, false
+        if (psychic.consumeMana(concept.cost)) {
+            val (health, location) = link.first
+            player.health = health
+            player.addPotionEffect(
+                PotionEffect(
+                    PotionEffectType.DAMAGE_RESISTANCE,
+                    20, 200, false, false
+                )
             )
-        )
-        player.teleport(location)
-        player.playSound(
-            player.location,
-            Sound.ENTITY_BAT_TAKEOFF,
-            1.0f,
-            1.0f
-        )
-        player.world.spawnParticle(
-            Particle.GLOW,
-            player.location,
-            64,
-            0.1,
-            0.1,
-            0.1,
-            3.0,
-            null,
-            true
-        )
-        player.noDamageTicks = 20
+            player.teleport(location)
+            player.playSound(
+                player.location,
+                Sound.ENTITY_BAT_TAKEOFF,
+                1.0f,
+                1.0f
+            )
+            player.world.spawnParticle(
+                Particle.GLOW,
+                player.location,
+                64,
+                0.1,
+                0.1,
+                0.1,
+                3.0,
+                null,
+                true
+            )
+            player.noDamageTicks = 20
+        } else {
+            player.sendActionBar(TestResult.FailedCost.message(this))
+        }
     }
 
     data class TimeFrame(val health: Double, val location: Location)
