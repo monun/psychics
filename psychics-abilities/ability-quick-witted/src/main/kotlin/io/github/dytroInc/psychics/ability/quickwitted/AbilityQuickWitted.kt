@@ -67,7 +67,7 @@ class AbilityConceptQuickWitted : AbilityConcept() {
 
 class AbilityQuickWitted : ActiveAbility<AbilityConceptQuickWitted>(), Listener {
     companion object {
-        fun createProblem() = when (nextInt(9)) {
+        fun createProblem() = when (nextInt(8)) {
             in 0..1 -> {
                 val a = nextInt(30, 300)
                 val b = nextInt(30, 300)
@@ -88,20 +88,13 @@ class AbilityQuickWitted : ActiveAbility<AbilityConceptQuickWitted>(), Listener 
                 val a = b * nextInt(2, 8)
                 MathProblem(MathProblems.MULTIPLICATION_DIVISION, "$a ÷ $b = ?", a / b)
             }
-            7 -> {
+            else -> {
                 val a = nextInt(3, 10)
                 val b = nextInt(3, 10)
                 val c = nextInt(-5, 5)
                 val d = nextInt(2, 5)
                 MathProblem(MathProblems.LINEAR_EQUATION, "x를 구하시오) $c(x + $b) + $d = ${c * (a + b) + d}", a)
             }
-            8 -> {
-                val a = nextInt(3, 10)
-                val b = nextInt(3, 10)
-                val c = a * (a * b)
-                MathProblem(MathProblems.LINEAR_EQUATION, "x를 구하시오) ${b}x = $c ÷ x", a)
-            }
-            else -> MathProblem(MathProblems.ADDITION_SUBTRACTION, "1 + 1은 귀요미!", "귀요미".hashCode())
         }
     }
 
