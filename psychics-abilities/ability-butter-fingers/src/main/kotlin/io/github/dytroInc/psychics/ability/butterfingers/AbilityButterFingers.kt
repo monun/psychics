@@ -14,18 +14,18 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.inventory.PlayerInventory
 
 
-// 지정한 대상의 아이템을 5초 후에 모두 떨어트리는 능력
+// 지정한 대상의 들고 있는 아이템을 모두 떨어트리는 능력
 @Name("butter-fingers")
 class AbilityConceptButterFingers : AbilityConcept() {
     init {
-        cooldownTime = 120000L
-        cost = 80.0
+        cooldownTime = 20000L
+        cost = 35.0
         range = 16.0
         description =
-            listOf(text("지정한 대상의 모든 아이템을 5초 후에 떨어트립니다."))
+            listOf(text("지정한 대상이 들고 있는 아이템들을 떨어트립니다."))
         displayName = "부주의"
         wand = ItemStack(Material.BLAZE_ROD)
     }
@@ -79,14 +79,16 @@ class AbilityButterFingers : ActiveAbility<AbilityConceptButterFingers>() {
         if (!(target is LivingEntity && target is InventoryHolder)) {
             return esper.player.sendActionBar(TestResult.FailedTarget.message(this))
         }
+        val inventory = target.inventory
+        if (inventory !is PlayerInventory) {
+            return esper.player.sendActionBar(TestResult.FailedTarget.message(this))
+        }
         if (!psychic.consumeMana(concept.cost)) return esper.player.sendActionBar(TestResult.FailedCost.message(this))
         cooldownTime = concept.cooldownTime
-        esper.player.sendActionBar(text("${target.name}의 아이템이 5초 후에 떨어질 예정입니다."))
-        psychic.runTask(object : BukkitRunnable() {
-            override fun run() {
-                target.inventory.contents.forEach { dropItem(target, it) }
-            }
-        }, 100L)
+        esper.player.sendActionBar(text("${target.name}의 아이템을 떨어트렸습니다."))
+
+        dropItem(target, inventory.itemInMainHand)
+        dropItem(target, inventory.itemInOffHand)
     }
 
 }
