@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
+// 엔티티에게 피해를 입을 때 마다 신속을 받는 능력
 @Name("horse-whipping")
 class AbilityConceptHorseWhipping : AbilityConcept() {
     @Config
     val speedAmplifier = 2
-
 
     init {
         durationTime = 1000L
