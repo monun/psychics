@@ -3,6 +3,7 @@ package io.github.sincostan1122.psychics.ability.telekinesis
 
 import io.github.monun.psychics.ActiveAbility
 import io.github.monun.psychics.AbilityConcept
+import io.github.monun.psychics.TestResult
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.damage.Damage
@@ -18,9 +19,13 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.entity.*
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
 import kotlin.math.max
 
@@ -28,6 +33,8 @@ import kotlin.math.max
 @Name("Telekinesis")
 class AbilityConceptTelekinesis : AbilityConcept() {
 
+    @Config
+    var cancelcooltime = 10
 
     init {
         range = 6.0
@@ -39,8 +46,10 @@ class AbilityConceptTelekinesis : AbilityConcept() {
         displayName = "염력"
 
         description = listOf(
-            text("구체를 소환하여 최대 ${durationTime / 1000.0}초동안 앞으로 나아가게 합니다."),
-            text("재사용하거나 지속시간이 끝날 시 구체의 위치에 폭팔을 일으킵니다.")
+            text("화약을 담은 구체를 소환하고 최대 ${durationTime / 1000.0}초동안 정신 집중을 합니다."),
+            text("정신 집중 동안 구체는 자동으로 바라보는 방향으로 날아갑니다."),
+            text("재사용하거나 지속시간이 끝날 시 구체가 폭팔을 일으킵니다."),
+            text("만약 정신 집중 동안 피격당할 시 ${cancelcooltime}초 동안 염력이 봉인됩니다.")
         )
     }
 }
@@ -49,6 +58,7 @@ class AbilityTelekinesis : ActiveAbility<AbilityConceptTelekinesis>(), Listener 
     var playerdt = 0.0
     var fakeEntity: FakeEntity? = null
     var isskillon = 0
+    var manafifty = 0
 
 
     override fun onEnable() {
@@ -62,17 +72,30 @@ class AbilityTelekinesis : ActiveAbility<AbilityConceptTelekinesis>(), Listener 
         psychic.runTaskTimer({
             fakeEntity?.moveTo(tntloc())
             if (isskillon == 1) {
+
                 fakeEntity!!.isVisible = true
                 playerdt += 1
+                esper.player.sendActionBar("정신 집중...")
+                esper.player.addPotionEffect(
+                    PotionEffect(PotionEffectType.SLOW_FALLING, 10, 255, false, false, false)
+                )
+                esper.player.addPotionEffect(
+                    PotionEffect(PotionEffectType.SLOW, 10, 5, false, false, false)
+                )
             }
 
             if (durationTime == 0L) {
                 if (isskillon == 1) {
+                    esper.player.sendActionBar("펑!")
                     fakeEntity!!.isVisible = false
                     cooldownTime = concept.cooldownTime
                     isskillon = 0
                     tnt = TNT(tntloc())
                     destroy()
+                    if (manafifty == 1){
+                        psychic.consumeMana(concept.cost)
+                        manafifty = 0
+                    }
 
 
                 }
@@ -119,9 +142,16 @@ class AbilityTelekinesis : ActiveAbility<AbilityConceptTelekinesis>(), Listener 
 
         }
     }
+    private fun removetnt() {
+        tnt?.run {
+
+            remove()
+            tnt = null
+        }
+    }
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val concept = concept
-
+        val result = test()
 
 
         if(isskillon == 0) {
@@ -130,14 +160,22 @@ class AbilityTelekinesis : ActiveAbility<AbilityConceptTelekinesis>(), Listener 
             durationTime = concept.durationTime
             isskillon = 1
             fakeEntity!!.isVisible = true
+            if (esper.getAttribute(EsperAttribute.MANA) < 50) {
+                psychic.consumeMana(-(concept.cost))
+                manafifty = 1
+            }
         }
         else if(isskillon == 1) {
+            esper.player.sendActionBar("펑!")
             tnt = TNT(tntloc())
             destroy()
             cooldownTime = concept.cooldownTime
-
             fakeEntity!!.isVisible = false
             isskillon = 0
+            if (manafifty == 1){
+                psychic.consumeMana(concept.cost)
+                manafifty = 0
+            }
         }
 
 
@@ -188,6 +226,17 @@ class AbilityTelekinesis : ActiveAbility<AbilityConceptTelekinesis>(), Listener 
         fun remove() {
             tnt.remove()
             stand.remove()
+        }
+    }
+    @EventHandler(ignoreCancelled = true)
+    fun onEntityDamage(event: EntityDamageEvent) {
+        if (durationTime > 0L) {
+            esper.player.sendActionBar("피격당했습니다!")
+            cooldownTime = concept.cancelcooltime * 1000L
+            tnt = TNT(tntloc())
+            removetnt()
+            fakeEntity!!.isVisible = false
+            isskillon = 0
         }
     }
 

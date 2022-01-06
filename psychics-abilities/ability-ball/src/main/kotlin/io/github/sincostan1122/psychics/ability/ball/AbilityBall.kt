@@ -56,7 +56,7 @@ class AbilityBall : ActiveAbility<AbilityConceptBall>(), Listener {
     var isskillon = 0
     lateinit var moveloc : Location
     var num = 1
-    var toplayer = 0
+    var manafifty = 0
 
     override fun onEnable() {
         psychic.registerEvents(this)
@@ -84,6 +84,10 @@ class AbilityBall : ActiveAbility<AbilityConceptBall>(), Listener {
                 fakeEntity?.moveTo(ballloc())
                 if (durationTime == 0L) {
                     if (isskillon == 1) {
+                        if (manafifty == 1){
+                            psychic.consumeMana(concept.cost)
+                            manafifty = 0
+                        }
                         moveloc = objectball!!.location
                         cooldownTime = concept.cooldownTime
                         loca = objectball!!.location
@@ -155,6 +159,10 @@ class AbilityBall : ActiveAbility<AbilityConceptBall>(), Listener {
             psychic.consumeMana(concept.cost)
             durationTime = concept.durationTime
             isskillon = 1
+            if (esper.getAttribute(EsperAttribute.MANA) < 50) {
+                psychic.consumeMana(-(concept.cost))
+                manafifty = 1
+            }
 
         }
         else if(isskillon == 1) {
@@ -162,6 +170,10 @@ class AbilityBall : ActiveAbility<AbilityConceptBall>(), Listener {
             cooldownTime = concept.cooldownTime
             loca = objectball!!.location
             isskillon = 2
+            if (manafifty == 1){
+                psychic.consumeMana(concept.cost)
+                manafifty = 0
+            }
         }
 
     }
