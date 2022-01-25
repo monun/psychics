@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.6.10"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(16))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -16,7 +16,7 @@ allprojects {
     tasks {
         withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
             kotlinOptions {
-                jvmTarget = "16"
+                jvmTarget = "17"
             }
         }
     }
@@ -30,12 +30,12 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
 
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
 
-        implementation("io.github.monun:tap-api:4.1.9")
+        implementation("io.github.monun:tap-api:4.3.2")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
