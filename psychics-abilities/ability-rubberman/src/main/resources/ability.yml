@@ -1,0 +1,5 @@
+group: io.github.xenon245
+name: rubberman
+version: 1.0
+main: io.github.xenon245.psychic.ability.rubberman.AbilityRubberman
+author: xenon2452
