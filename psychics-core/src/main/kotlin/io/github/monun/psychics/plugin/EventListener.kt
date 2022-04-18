@@ -172,8 +172,8 @@ class EventListener(
         } else if (invType == InventoryType.ANVIL) {
             event.result?.apply {
                 val contents = inv.storageContents
-                val first = contents[0] ?: return@apply
-                val second = contents[1] ?: return@apply
+                val first = contents?.get(0) ?: return@apply
+                val second = contents?.get(1) ?: return@apply
                 var level = max(first.psionicsLevel, second.psionicsLevel)
 
                 if (level > 0) {
