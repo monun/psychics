@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.6.10"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(16))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -16,7 +16,7 @@ allprojects {
     tasks {
         withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
             kotlinOptions {
-                jvmTarget = "16"
+                jvmTarget = "17"
             }
         }
     }
@@ -27,15 +27,17 @@ subprojects {
 
     repositories {
         maven("https://papermc.io/repo/repository/maven-public/")
+        // maven("https://papermc.io/repo/repository/maven-snapshots/")
+        maven("https://oss.sonatype.org/content/groups/public/")
     }
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT") // 왜 안돼?
 
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
 
-        implementation("io.github.monun:tap-api:4.1.9")
+        implementation("io.github.monun:tap-api:4.4.0") // 왜 안돼? 22
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
