@@ -1,0 +1,5 @@
+group: ${group}
+name: ${projectName}
+version: ${version}
+main: ${group}.psychics.ability.${packageName}.Ability${abilityName.capitalize()}
+author: $author
