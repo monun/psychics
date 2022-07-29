@@ -12,14 +12,6 @@ allprojects {
     repositories {
         mavenCentral()
     }
-
-    tasks {
-        withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
-    }
 }
 
 subprojects {
@@ -36,9 +28,5 @@ subprojects {
         implementation(kotlin("reflect"))
 
         implementation("io.github.monun:tap-api:4.6.0")
-
-        testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
-        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-        testImplementation("org.mockito:mockito-core:3.6.28")
     }
 }
