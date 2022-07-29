@@ -109,7 +109,7 @@ class AbilityConceptStormBreaker : AbilityConcept() {
 }
 
 class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
-    private var hittedAxe: FakeEntity? = null
+    private var hittedAxe: FakeEntity<ArmorStand>? = null
 
     override fun onEnable() {
         psychic.registerEvents(AxeListener())
@@ -207,7 +207,7 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
                                 ).apply {
                                     velocity = location.direction.multiply(concept.axeSpeed)
 
-                                    updateMetadata<ArmorStand> {
+                                    updateMetadata {
                                         isMarker = true
                                         invisible = true
                                     }
@@ -229,7 +229,7 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
     inner class AxeProjectile(
         private val damage: Damage, private val item: ItemStack
     ) : PsychicProjectile(1200, concept.range) {
-        var axe: FakeEntity? = null
+        var axe: FakeEntity<ArmorStand>? = null
 
         override fun onPreUpdate() {
             velocity = velocity.apply { y -= concept.axeGravity }
@@ -239,7 +239,7 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
             val to = movement.to
             axe?.let { axe ->
                 axe.moveTo(to.clone().apply { y -= 1.62; yaw -= 90.0F })
-                axe.updateMetadata<ArmorStand> {
+                axe.updateMetadata {
                     headPose = EulerAngle(0.0, 0.0, ticks * -0.5)
                 }
             }
@@ -273,7 +273,7 @@ class AbilityStormBreaker : Ability<AbilityConceptStormBreaker>() {
                     axe?.let { axe ->
                         this.axe = null
                         axe.moveTo(hitLocation.clone().apply { y -= 0.5; yaw = from.yaw - 90.0F })
-                        axe.updateMetadata<ArmorStand> {
+                        axe.updateMetadata {
                             headPose = EulerAngle(0.0, 0.0, (-180.0).toRadians())
                         }
                         hittedAxe = axe
