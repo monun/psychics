@@ -11,3 +11,8 @@
 현재 개발 진행중으로 배포버전이 없습니다.
 
 * [docs](https://monun.github.io/psychics/)
+
+---
+## TODO
+
+* [ ] Show Firework without Tap Effect Util 
