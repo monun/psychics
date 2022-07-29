@@ -49,8 +49,19 @@ subprojects {
 }
 
 gradle.buildFinished {
-    val libs = File(buildDir, "libs")
+    val libs = subprojects
+        .map { File(it.buildDir, "libs") }
+        .filter { it.exists() }
+        .mapNotNull { it.listFiles()!!.singleOrNull() }
 
-    if (libs.exists())
-        zipTo(File(buildDir, "abilities.zip"), libs)
+    val abilitiesDir = File(buildDir,"abilities")
+
+    abilitiesDir.mkdir()
+
+    libs.forEach {
+        val newFile = File(abilitiesDir,it.name)
+        it.copyTo(newFile,true)
+    }
+
+    zipTo(File(buildDir, "abilities.zip"), abilitiesDir)
 }
