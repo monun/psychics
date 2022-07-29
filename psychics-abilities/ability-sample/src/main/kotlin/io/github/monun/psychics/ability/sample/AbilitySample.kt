@@ -8,7 +8,7 @@ import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.util.hostileFilter
 import io.github.monun.tap.config.Name
-import io.github.monun.tap.effect.playFirework
+//import io.github.monun.tap.effect.playFirework
 import net.kyori.adventure.text.Component.text
 import org.bukkit.*
 import org.bukkit.entity.LivingEntity
@@ -37,7 +37,7 @@ class AbilitySample : ActiveAbility<AbilityConceptSample>(), Listener {
         private val effect = FireworkEffect.builder().with(FireworkEffect.Type.BURST).withColor(Color.RED).build()
 
         private fun LivingEntity.playPsychicEffect() {
-            world.playFirework(location, effect)
+            //orld.playFirework(location, effect) //TODO: Show Firework without Tap Effect Util
         }
     }
 

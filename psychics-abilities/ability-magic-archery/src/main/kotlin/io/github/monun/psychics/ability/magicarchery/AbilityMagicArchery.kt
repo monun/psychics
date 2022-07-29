@@ -9,7 +9,7 @@ import io.github.monun.psychics.damage.DamageType
 import io.github.monun.psychics.damage.psychicDamage
 import io.github.monun.psychics.util.TargetFilter
 import io.github.monun.tap.config.Name
-import io.github.monun.tap.effect.playFirework
+//import io.github.monun.tap.effect.playFirework
 import io.github.monun.tap.trail.TrailSupport
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -132,7 +132,7 @@ class AbilityMagicArchery : Ability<AbilityConceptMagicArchery>(), Listener {
                     val box = target.boundingBox
                     val effect = FireworkEffect.builder().with(FireworkEffect.Type.BURST)
                         .withColor(if (force == 1.0F) Color.RED else Color.ORANGE).build()
-                    world.playFirework(box.centerX, box.maxY + 0.5, box.centerZ, effect)
+                    //world.playFirework(box.centerX, box.maxY + 0.5, box.centerZ, effect) //TODO: Show Firework without Tap Effect Util
                 }
             }
 
