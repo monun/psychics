@@ -38,6 +38,8 @@ import org.bukkit.boss.BossBar
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.entity.FallingBlock
+import org.bukkit.entity.Item
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
@@ -132,7 +134,7 @@ class Psychic internal constructor(
 
     private lateinit var listeners: ArrayList<RegisteredEntityListener>
 
-    private lateinit var fakeEntities: MutableSet<FakeEntity>
+    private lateinit var fakeEntities: MutableSet<FakeEntity<*>>
 
     private var prevUpdateTime = 0L
 
@@ -166,7 +168,7 @@ class Psychic internal constructor(
         ticker = Ticker.precision()
         projectiles = FakeProjectileManager()
         listeners = arrayListOf()
-        fakeEntities = Collections.newSetFromMap(WeakHashMap<FakeEntity, Boolean>())
+        fakeEntities = Collections.newSetFromMap(WeakHashMap())
 
         if (concept.mana > 0.0) {
             manaBar = Bukkit.createBossBar(null, concept.manaColor, BarStyle.SEGMENTED_10).apply {
@@ -360,7 +362,7 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun spawnFakeEntity(location: Location, entityClass: Class<out Entity>): FakeEntity {
+    fun <T:Entity> spawnFakeEntity(location: Location, entityClass: Class<T>): FakeEntity<T> {
         checkState()
         checkEnabled()
 
@@ -378,7 +380,7 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun spawnFakeFallingBlock(location: Location, blockData: BlockData): FakeEntity {
+    fun spawnFakeFallingBlock(location: Location, blockData: BlockData): FakeEntity<FallingBlock> {
         checkState()
         checkEnabled()
 
@@ -396,7 +398,7 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun spawnItem(location: Location, itemStack: ItemStack): FakeEntity {
+    fun spawnItem(location: Location, itemStack: ItemStack): FakeEntity<Item> {
         checkState()
         checkEnabled()
 
@@ -414,9 +416,9 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun spawnMarker(location: Location): FakeEntity {
+    fun spawnMarker(location: Location): FakeEntity<ArmorStand> {
         return spawnFakeEntity(location, ArmorStand::class.java).apply {
-            updateMetadata<ArmorStand> {
+            updateMetadata {
                 isMarker = true
                 isInvisible = true
             }
@@ -431,7 +433,7 @@ class Psychic internal constructor(
      * @exception IllegalArgumentException 유효하지 않은 객체일때 발생
      * @exception IllegalArgumentException 활성화되지 않은 객체일때 발생
      */
-    fun marker(passenger: FakeEntity): FakeEntity {
+    fun <T:Entity> marker(passenger: FakeEntity<T>): FakeEntity<ArmorStand> {
         return spawnMarker(passenger.location).apply { addPassenger(passenger) }
     }
 
