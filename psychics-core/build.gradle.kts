@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.monun:kommand-api:2.12.0")
+    implementation("io.github.monun:kommand-api:2.13.0")
     implementation("io.github.monun:invfx-api:3.1.0")
 }
 
