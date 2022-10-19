@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-// 마나 물약 제조
+// 마인크래프트 속 FPS 게임
 @Name("sniping")
 class AbilityConceptSniping : AbilityConcept() {
 
