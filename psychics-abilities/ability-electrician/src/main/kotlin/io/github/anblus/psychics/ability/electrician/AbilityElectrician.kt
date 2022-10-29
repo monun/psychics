@@ -263,7 +263,6 @@ class AbilityElectrician : Ability<AbilityConceptElectrician>(), Listener {
                 val from = trail.from
                 val length = velocity.normalizeAndLength()
                 val world = from.world
-                println("ok0")
                 world.rayTrace(
                     from,
                     velocity,
