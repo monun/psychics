@@ -231,6 +231,7 @@ class AbilityElectrician : Ability<AbilityConceptElectrician>(), Listener {
                     cooldownTime = concept.cooldownTime
                     manaUseFrequency += concept.manaUseFrequencyIncreasePerMana * concept.powerTransmissionCost.toInt()
                     isTransmissing = true
+                    player.fallDistance = 0f
 
                     val location = player.eyeLocation
                     val projectile = ElectronProjectile().apply {

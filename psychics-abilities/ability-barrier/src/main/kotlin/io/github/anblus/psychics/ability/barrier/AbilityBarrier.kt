@@ -45,7 +45,7 @@ class AbilityConceptBarrier : AbilityConcept() {
             text("능력을 다시 사용 하였을 때 바라본 위치까지 연결 되는"),
             text("방벽을 지을 수 있습니다."),
             text("방벽은 시전자와 아군을 제외한 모든 생물의 이동을"),
-            text("차딘함과 동시에 만일 적일시 추가로 데미지를 입힙니다."),
+            text("차단함과 동시에 만일 적일시 추가로 데미지를 입힙니다."),
             text("${ChatColor.GRAY}*지나치게 빠른 엔티티의 이동은 막지 못합니다.")
         )
         wand = ItemStack(Material.PHANTOM_MEMBRANE)
