@@ -50,13 +50,13 @@ import kotlin.random.Random.Default.nextInt
 class AbilityConceptBand : AbilityConcept() {
 
     @Config
-    var vocalistStat = listOf(
+    var vocalistStat = mutableListOf(
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 20.0),
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 5.0),
         0.35)
 
     @Config
-    var guitaristStat = listOf(
+    var guitaristStat = mutableListOf(
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 12.0),
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 4.2),
         0.35)
@@ -65,7 +65,7 @@ class AbilityConceptBand : AbilityConcept() {
     var guitaristArrowFireTick = 50
 
     @Config
-    var bassistStat = listOf(
+    var bassistStat = mutableListOf(
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 16.0),
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.0),
         0.35)
@@ -74,7 +74,7 @@ class AbilityConceptBand : AbilityConcept() {
     var bassistArrowSlowDuration = 50
 
     @Config
-    val drummerStat = listOf(
+    val drummerStat = mutableListOf(
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 18.0),
         EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.5),
         0.35)
