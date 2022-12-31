@@ -50,34 +50,46 @@ import kotlin.random.Random.Default.nextInt
 class AbilityConceptBand : AbilityConcept() {
 
     @Config
-    var vocalistStat = mutableListOf(
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 20.0),
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 5.0),
-        0.35)
+    var vocalistHealth = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 20.0)
 
     @Config
-    var guitaristStat = mutableListOf(
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 12.0),
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 4.2),
-        0.35)
+    var vocalistDamage = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 5.0)
+
+    @Config
+    var vocalistMoveSpeed = 0.35
+
+    @Config
+    var guitaristHealth = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 12.0)
+
+    @Config
+    var guitaristDamage = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 4.2)
+
+    @Config
+    var guitaristMoveSpeed = 0.39
 
     @Config
     var guitaristArrowFireTick = 50
 
     @Config
-    var bassistStat = mutableListOf(
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 16.0),
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.0),
-        0.35)
+    var bassistHealth = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 16.0)
+
+    @Config
+    var bassistDamage = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.0)
+
+    @Config
+    var bassistMoveSpeed = 0.43
 
     @Config
     var bassistArrowSlowDuration = 50
 
     @Config
-    val drummerStat = mutableListOf(
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 18.0),
-        EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.5),
-        0.35)
+    val drummerHealth = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 25.0)
+
+    @Config
+    val drummerDamage = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.5)
+
+    @Config
+    val drummerMoveSpeed = 0.27
 
     @Config
     val drummerBlindnessDuration = 40
@@ -118,7 +130,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
             key("music_disc.pigstep"), key("music_disc.wait"), key("music_disc.mellohi"))
 
         private val title: Array<String> = arrayOf("다가오는 그림자", "불결한 예측", "또 다른 미래",
-            "노을 아래에서", "고향으로 떠나며", "어딘가", "잔잔한 파도", "혁명을 앞두고" ,
+            "노을 아래에서", "고향길", "어딘가", "잔잔한 파도", "혁명을 앞두고" ,
             "돌이킬 수 없는", "은밀하게 위대하게", "마지막 휴양", "지루한 기다림", "죽음을 미루다",
             "위험한 추격전", "디지털 어드벤쳐", "풀리지 않는 수수께끼")
 
@@ -282,13 +294,13 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
                     var monster: Mob? = null
                     var color = DyeColor.BLACK.color
                     var name = ""
-                    var stat = listOf<Any>()
+                    var stat = arrayOf<Any>()
                     var handItem = ItemStack(Material.IRON_SWORD)
                     when (i) {
                         0 -> {
                             color = Color.GREEN
                             name = "${ChatColor.DARK_GREEN}보컬리스트"
-                            stat = concept.vocalistStat
+                            stat = arrayOf(concept.vocalistHealth, concept.vocalistDamage, concept.vocalistMoveSpeed)
                             handItem = ItemStack(Material.LIGHTNING_ROD)
                             monster = (world.spawnEntity(location, EntityType.ZOMBIE) as Zombie).apply {
                                 getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.3
@@ -298,7 +310,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
                         1 -> {
                             color = Color.MAROON
                             name = "${ChatColor.DARK_RED}기타리스트"
-                            stat = concept.guitaristStat
+                            stat = arrayOf(concept.guitaristHealth, concept.guitaristDamage, concept.guitaristMoveSpeed)
                             handItem = ItemStack(Material.BOW).apply {
                                 addUnsafeEnchantment(Enchantment.THORNS, 1)
                             }
@@ -307,7 +319,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
                         2 -> {
                             color = Color.ORANGE
                             name = "${ChatColor.GOLD}베이시스트"
-                            stat = concept.bassistStat
+                            stat = arrayOf(concept.bassistHealth, concept.bassistDamage, concept.bassistMoveSpeed)
                             handItem = ItemStack(Material.BOW).apply {
                                 addUnsafeEnchantment(Enchantment.THORNS, 1)
                             }
@@ -316,7 +328,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
                         3 -> {
                             color = Color.NAVY
                             name = "${ChatColor.DARK_BLUE}드러머"
-                            stat = concept.drummerStat
+                            stat = arrayOf(concept.drummerHealth, concept.drummerDamage, concept.drummerMoveSpeed)
                             handItem = ItemStack(Material.TRIPWIRE_HOOK)
                             monster = (world.spawnEntity(location, EntityType.WITHER_SKELETON) as WitherSkeleton).apply {
                                 getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)?.baseValue = 0.6
@@ -392,7 +404,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
         val arrow = event.projectile
         if (entity is Skeleton) {
             arrow.fireTicks = concept.guitaristArrowFireTick
-            (arrow as Arrow).damage = esper.getStatistic(concept.guitaristStat[1] as EsperStatistic)
+            (arrow as Arrow).damage = esper.getStatistic(concept.guitaristDamage)
             psychic.runTask({
                 psychic.plugin.entityEventManager.registerEvents(arrow, this)
                 arrows.add(arrow)
@@ -401,7 +413,7 @@ class AbilityBand : ActiveAbility<AbilityConceptBand>(), Listener {
             (arrow as Arrow).apply {
                 color = Color.GRAY
                 addCustomEffect(PotionEffect(PotionEffectType.SLOW, concept.bassistArrowSlowDuration, 3, false, false), true)
-                damage = esper.getStatistic(concept.bassistStat[1] as EsperStatistic)
+                damage = esper.getStatistic(concept.bassistDamage)
             }
             psychic.runTask({
                 psychic.plugin.entityEventManager.registerEvents(arrow, this)
