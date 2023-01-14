@@ -17,9 +17,7 @@ import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -39,7 +37,8 @@ class AbilityConceptGuardian : AbilityConcept() {
     init {
         displayName = "수호자"
         type = AbilityType.ACTIVE
-        cooldownTime = 60000L
+        cooldownTime = 10000L
+        cost = 60.0
         castingTime = 2000L
         healing = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 1.0)
         description = listOf(
@@ -80,7 +79,7 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
     fun onTicks() {
         guardian?.let { guardian ->
             if (!guardian.isDead) {
-                val location = guardian.location
+                val location = guardian.eyeLocation
                 val range = concept.guardianRange
                 location.getNearbyEntities(
                     range.toDouble(), range.toDouble(), range.toDouble()
@@ -127,6 +126,7 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
         val player = event.player
         val location = player.location
         cooldownTime = concept.cooldownTime
+        psychic.consumeMana(concept.cost)
 
         guardian?.let { guardian ->
             guardian.remove()
@@ -137,19 +137,6 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
             guardian.setAI(false)
             guardian.maxHealth = 0.1
             guardian.customName = "${esper.player.name}님의 수호자"
-        }
-    }
-
-    @EventHandler
-    fun onGuardianDamage(event: EntityDamageByEntityEvent) {
-        val victim = event.entity
-        if (victim == guardian) {
-            if (esper.player == event.damager) {
-                event.damage = 0.0
-                event.isCancelled = true
-            } else {
-                event.damage *= 100.0
-            }
         }
     }
 }
