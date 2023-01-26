@@ -88,6 +88,10 @@ class AbilityDrone : ActiveAbility<AbilityConceptDrone>(), Listener {
         }, 0L, 3L)
     }
 
+    override fun onDisable() {
+        abilityCancel()
+    }
+
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val player = event.player
         if (!psychic.consumeMana(concept.cost)) return player.sendActionBar(TestResult.FailedCost.message(this))
