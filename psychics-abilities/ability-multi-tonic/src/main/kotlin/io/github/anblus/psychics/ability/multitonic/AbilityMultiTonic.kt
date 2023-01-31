@@ -6,7 +6,6 @@ import io.github.monun.psychics.AbilityType
 import io.github.monun.psychics.TestResult
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
-import io.github.monun.tap.task.TickerTask
 import net.kyori.adventure.text.Component.text
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -90,10 +89,6 @@ class AbilityMultiTonic : Ability<AbilityConceptMultiTonic>(), Listener {
 
     var usingCount = 0
 
-    var usingaAbilityTime = 0
-
-    var usingTimer: TickerTask? = null
-
     var vitaminDEffect = 0
 
     override fun onEnable() {
@@ -161,24 +156,12 @@ class AbilityMultiTonic : Ability<AbilityConceptMultiTonic>(), Listener {
                         return
                     }
 
-                    if (usingaAbilityTime < round(concept.castingTime.toDouble() / 200)) {
-                        usingaAbilityTime += 1
-                        usingTimer?.cancel()
-                        usingTimer = psychic.runTask({1
-                            usingaAbilityTime = 0
-                            cooldownTime = 1000L
-                        }, 7L)
-                        player.world.playSound(player.location, Sound.ENTITY_GENERIC_EAT, 1.0F, 2.0F)
-                        player.world.spawnParticle(Particle.BLOCK_DUST, player.boundingBox.center.toLocation(player.world), 6, 0.2, 0.2, 0.2, 0.0, Material.AMETHYST_BLOCK.createBlockData(), true)
-                        return
-                    }
-                    usingTimer?.cancel()
+                    player.world.spawnParticle(Particle.BLOCK_DUST, player.boundingBox.center.toLocation(player.world), 6, 0.2, 0.2, 0.2, 0.0, Material.AMETHYST_BLOCK.createBlockData(), true)
                     player.world.playSound(player.location, Sound.ENTITY_GENERIC_EAT, 1.0F, 0.1F)
                     cooldownTime = concept.cooldownTime
                     psychic.mana -= concept.cost
                     usingCount += 1
                     eatingTime = 0
-                    usingaAbilityTime = 0
                     var sum = nutritions.sum()
                     var currentSum = 0
                     var nutritionsRange = ArrayList<Int>()

@@ -9,7 +9,6 @@ import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.tooltip.TooltipBuilder
 import io.github.monun.psychics.tooltip.stats
 import io.github.monun.psychics.tooltip.template
-import io.github.monun.psychics.util.hostileFilter
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 import io.github.monun.tap.trail.TrailSupport
@@ -28,7 +27,7 @@ import org.bukkit.inventory.ItemStack
 class AbilityConceptMediation : AbilityConcept() {
 
     @Config
-    val totalRange = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 16.0)
+    val totalRange = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 8.0)
 
     init {
         displayName = "중개"
@@ -77,13 +76,13 @@ class AbilityMediation : Ability<AbilityConceptMediation>(), Listener {
                         FluidCollisionMode.NEVER,
                         true,
                         0.8,
-                        player.hostileFilter()
+                        null
                     )?.let { result ->
                         val target = result.hitEntity
                         if (target !is Player) return
                         val targetEsper = esper.manager.getEsper(target)
                         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-                            if (targetEsper?.psychic?.mana ?: return >= 100) {
+                            if ((targetEsper?.psychic?.mana ?: return) >= (targetEsper.psychic?.concept?.mana ?: return)) {
                                 player.sendActionBar("대상의 마나가 이미 가득 차있습니다.")
                                 return
                             }
@@ -117,11 +116,11 @@ class AbilityMediation : Ability<AbilityConceptMediation>(), Listener {
                                 player.sendActionBar("아직 준비되지 않았습니다")
                                 return
                             }
-                            if (psychic.mana >= 100) {
+                            if (psychic.mana >= psychic.concept.mana) {
                                 player.sendActionBar("마나가 이미 가득 차있습니다.")
                                 return
                             }
-                            if (targetEsper?.psychic?.mana ?: return < concept.cost) {
+                            if ((targetEsper?.psychic?.mana) ?: return < concept.cost) {
                                 player.sendActionBar("대상의 마나가 ${concept.cost.toInt()} 미만입니다.")
                                 return
                             }

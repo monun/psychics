@@ -144,7 +144,7 @@ class AbilityElectricShockWave : ActiveAbility<AbilityConceptElectricShockWave>(
                                     range,
                                     FluidCollisionMode.NEVER,
                                     true,
-                                    thickness
+                                    thickness * 2.0
                                 ) { testEntity -> testEntity == entity}?.hitEntity?.let {
                                     targetList.add(entity)
                                 }

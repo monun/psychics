@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
+import kotlin.math.round
 
 // 다양한 물약 제조
 @Name("alchemy")
@@ -134,7 +135,7 @@ class AbilityAlchemy : Ability<AbilityConceptAlchemy>(), Listener {
                                             .decoration(TextDecoration.ITALIC, false)
                                             .build(),
                                         text()
-                                            .content("-${esper.getStatistic(concept.damage?.stats as EsperStatistic)} 체력 회복")
+                                            .content("-${round(esper.getStatistic(concept.damage?.stats as EsperStatistic) * 10.0) / 10.0} 체력 회복")
                                             .color(NamedTextColor.RED)
                                             .decoration(TextDecoration.ITALIC, false)
                                             .build()
@@ -150,7 +151,7 @@ class AbilityAlchemy : Ability<AbilityConceptAlchemy>(), Listener {
                                             .decoration(TextDecoration.ITALIC, false)
                                             .build(),
                                         text()
-                                            .content("+${esper.getStatistic(concept.healing as EsperStatistic)} 체력 회복")
+                                            .content("+${round(esper.getStatistic(concept.healing as EsperStatistic) * 10.0) / 10.0} 체력 회복")
                                             .color(NamedTextColor.BLUE)
                                             .decoration(TextDecoration.ITALIC, false)
                                             .build()
