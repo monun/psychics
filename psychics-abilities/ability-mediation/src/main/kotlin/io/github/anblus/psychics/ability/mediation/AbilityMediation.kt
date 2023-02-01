@@ -120,7 +120,7 @@ class AbilityMediation : Ability<AbilityConceptMediation>(), Listener {
                                 player.sendActionBar("마나가 이미 가득 차있습니다.")
                                 return
                             }
-                            if ((targetEsper?.psychic?.mana) ?: return < concept.cost) {
+                            if ((targetEsper?.psychic?.mana ?: return) < concept.cost) {
                                 player.sendActionBar("대상의 마나가 ${concept.cost.toInt()} 미만입니다.")
                                 return
                             }
