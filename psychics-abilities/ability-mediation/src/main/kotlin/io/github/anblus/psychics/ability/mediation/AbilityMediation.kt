@@ -75,9 +75,8 @@ class AbilityMediation : Ability<AbilityConceptMediation>(), Listener {
                         range,
                         FluidCollisionMode.NEVER,
                         true,
-                        0.8,
-                        null
-                    )?.let { result ->
+                        0.8
+                    ) { entity -> entity != player } ?.let { result ->
                         val target = result.hitEntity
                         if (target !is Player) return
                         val targetEsper = esper.manager.getEsper(target)
