@@ -91,7 +91,7 @@ class AbilityMagician : Ability<AbilityConceptMagician>(), Listener {
                 val world = entity.world
                 world.spawnParticle(Particle.DRAGON_BREATH, entity.boundingBox.center.toLocation(world), 12, 0.3, 0.3, 0.3, 0.0)
                 world.playSound(entity.location, Sound.ENTITY_ENDERMAN_TELEPORT, 2.0F, 2.0F)
-                event.damage = 0.0
+                event.isCancelled = true
                 entity.psychicDamage()
                 val randomResult = nextInt(1,7) - 1
                 if (randomResult == 0) {
