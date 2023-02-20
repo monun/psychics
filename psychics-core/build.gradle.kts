@@ -1,10 +1,10 @@
 plugins {
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 dependencies {
-    implementation("io.github.monun:kommand-api:2.13.0")
-    implementation("io.github.monun:invfx-api:3.1.0")
+    implementation("io.github.monun:kommand-api:3.1.2")
+    implementation("io.github.monun:invfx-api:3.3.0")
 }
 
 tasks {
