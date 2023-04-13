@@ -22,11 +22,11 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
 
-        implementation("io.github.monun:tap-api:4.9.1")
+        implementation("io.github.monun:tap-api:4.9.4")
     }
 }
