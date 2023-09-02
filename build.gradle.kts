@@ -27,6 +27,6 @@ subprojects {
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
 
-        implementation("io.github.monun:tap-api:4.9.6")
+        implementation("io.github.monun:tap-api:4.9.8")
     }
 }

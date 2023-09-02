@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.monun:kommand-api:3.1.6")
-    implementation("io.github.monun:invfx-api:3.3.0")
+    implementation("io.github.monun:kommand-api:3.1.7")
+    implementation("io.github.monun:invfx-api:3.3.2")
 }
 
 tasks {
