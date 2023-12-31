@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack
 class AbilityConceptMediation : AbilityConcept() {
 
     @Config
-    val totalRange = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 8.0)
+    val totalRange = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 12.0)
 
     init {
         displayName = "중개"

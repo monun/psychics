@@ -37,7 +37,7 @@ class AbilityConceptMagician : AbilityConcept() {
     init {
         displayName = "마술"
         type = AbilityType.PASSIVE
-        cost = 12.0
+        cost = 20.0
         cooldownTime = 2000L
         damage = Damage.of(DamageType.MELEE, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 4.0))
         description = listOf(
@@ -59,7 +59,6 @@ class AbilityConceptMagician : AbilityConcept() {
             meta.isPsychicbound = true
             itemMeta = meta
         })
-
     }
 
 }

@@ -32,7 +32,7 @@ class AbilityConceptEruption : AbilityConcept() {
     val explosionRange = 3.0
 
     @Config
-    val blockExplosionChance = 0.1
+    val blockExplosionChance = 0.15
 
     @Config
     val explosionFireChance = 0.33
@@ -41,7 +41,7 @@ class AbilityConceptEruption : AbilityConcept() {
     val blockWiggle = 0.8
 
     @Config
-    val blockExplosiveForce = 1.4
+    val blockExplosiveForce = 1.5
 
     @Config
     val blockSpeed = 1.0
@@ -53,12 +53,12 @@ class AbilityConceptEruption : AbilityConcept() {
     val blockExplosionRange = 2.0
 
     @Config
-    val blockExplosiveForceWiggle = 0.6
+    val blockExplosiveForceWiggle = 0.4
 
     init {
         displayName = "분화"
         type = AbilityType.ACTIVE
-        cost = 50.0
+        cost = 40.0
         cooldownTime = 10000L
         castingTime = 3000L
         range = 64.0

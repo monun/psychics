@@ -45,7 +45,7 @@ class AbilityConceptPaddywhack : AbilityConcept() {
     val damageMaxMultiple = 2.0
 
     @Config
-    val stressIncreasePerDamage = 5
+    val stressIncreasePerDamage = 7
 
     @Config
     val rageSpeedAmplifier = 3

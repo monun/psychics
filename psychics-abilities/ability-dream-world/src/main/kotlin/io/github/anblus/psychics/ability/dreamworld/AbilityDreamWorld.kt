@@ -20,9 +20,7 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Sheep
-import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -43,19 +41,19 @@ class AbilityConceptDreamWorld : AbilityConcept() {
     val rainbowGravity = 0.01
 
     @Config
-    val rainbowSpreadCycle = 5.0
+    val rainbowSpreadCycle = 2.0
 
     @Config
-    val rainbowSpreadBoost = 3.5
+    val rainbowSpreadBoost = 3.0
 
     @Config
     val rainbowSpreadPercent = 0.4
 
     @Config
-    val rainbowSpreadMaxTime = 15.0
+    val rainbowSpreadMaxTime = 7.0
 
     @Config
-    val rainbowSheepPercent = 0.04
+    val rainbowSheepPercent = 0.02
 
     init {
         displayName = "꿈나라"
@@ -69,8 +67,8 @@ class AbilityConceptDreamWorld : AbilityConcept() {
             text("능력 사용시 무지개 투사체를 발사합니다."),
             text("무지개 투사체가 적중한 지점 주위로는 무지개"),
             text("블록들이 사방으로 일정 수준까지 퍼져 나갑니다."),
-            text("시전자 자신과 아군이 무지개 위에 있을 경우 신속 3,"),
-            text("반대로 적들이 위에 있을 경우 구속 2 와 피해를 입힙니다."),
+            text("시전자 자신과 아군이 무지개 위에 있을 경우 신속을,"),
+            text("반대로 적들이 위에 있을 경우 구속과 피해를 입힙니다."),
             text("바뀐 무지개 블록은 지속 시간 후에 하얀 콘크리트 블록이 됩니다.")
         )
         wand = ItemStack(Material.WHITE_DYE)
@@ -109,8 +107,6 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
 
     override fun onEnable() {
         cycle = concept.rainbowSpreadCycle
-        psychic.registerEvents(this)
-        psychic.abilities
         psychic.runTaskTimer({
             if (rainbowTime > 0) rainbowTime -= 0.05
              if (rainbowProjectileList.size >= 1) {
@@ -124,7 +120,7 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
                 var isDead: Boolean
                 if (cycleCount >= cycle) {
                     cycleCount = 0.0
-                    var deleteList = arrayListOf<Vector>()
+                    val deleteList = arrayListOf<Vector>()
                     val world = esper.player.world
                     repeat(rainbowLivingVector.size) { i ->
                         isDead = true
@@ -148,11 +144,9 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
                                             customName = "Rainbow"
                                         }
                                         psychic.runTask({
-                                            if (vector in rainbowVector) {
-                                                rainbowVector.remove(vector)
-                                                if (vector in rainbowLivingVector) rainbowLivingVector.remove(vector)
-                                                block.type = Material.WHITE_CONCRETE
-                                            }
+                                            if (block.location.toVector() in rainbowVector) rainbowVector.remove(block.location.toVector())
+                                            if (block.location.toVector() in rainbowLivingVector) rainbowLivingVector.remove(block.location.toVector())
+                                            if (block.type in rainbowBlockList) block.type = Material.WHITE_CONCRETE
                                         }, concept.durationTime / 50)
                                     }
                                 }
@@ -177,7 +171,7 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
             val player = esper.player
             for (entity in player.world.entities) {
                 if (entity is LivingEntity) {
-                    if (entity.location.add(0.0, -1.0, 0.0).block.location.toVector() in rainbowVector) {
+                    if (entity.location.add(0.0, -1.0, 0.0).block.location.toVector() in rainbowVector && entity.location.add(0.0, -1.0, 0.0).block.type in rainbowBlockList) {
                         if (player.hostileFilter().test(entity) && entity !is Sheep) {
                             entity.psychicDamage()
                             entity.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 20, 1))
@@ -191,7 +185,7 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
     override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
         val player = esper.player
 
-        if (rainbowTime > 0) return player.sendActionBar("현재 생성 중인 무지개 블록들이 있습니다.")
+        if (rainbowTime > 0) return player.sendActionBar(text("현재 생성 중인 무지개 블록들이 있습니다."))
         if (!psychic.consumeMana(concept.cost)) return player.sendActionBar(TestResult.FailedCost.message(this))
         cooldownTime = concept.cooldownTime
 
@@ -258,11 +252,9 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
                             cycle -= concept.rainbowSpreadBoost
                             rainbowTime = concept.rainbowSpreadMaxTime
                             psychic.runTask({
-                                if (block.location.toVector() in rainbowVector) {
-                                    rainbowVector.remove(block.location.toVector())
-                                    if (block.location.toVector() in rainbowLivingVector) rainbowLivingVector.remove(block.location.toVector())
-                                    block.type = Material.WHITE_CONCRETE
-                                }
+                                if (block.location.toVector() in rainbowVector) rainbowVector.remove(block.location.toVector())
+                                if (block.location.toVector() in rainbowLivingVector) rainbowLivingVector.remove(block.location.toVector())
+                                if (block.type in rainbowBlockList) block.type = Material.WHITE_CONCRETE
                             }, concept.durationTime / 50)
                         }
                     }
@@ -274,16 +266,6 @@ class AbilityDreamWorld : ActiveAbility<AbilityConceptDreamWorld>(), Listener {
             rainbow.remove()
         }
     }
-
-    @EventHandler
-    fun onBreak(event: BlockBreakEvent) {
-        val block = event.block.location.toVector()
-        if (block in rainbowVector) {
-            rainbowVector.remove(block)
-            if (block in rainbowLivingVector) rainbowLivingVector.remove(block)
-        }
-    }
-
 }
 
 

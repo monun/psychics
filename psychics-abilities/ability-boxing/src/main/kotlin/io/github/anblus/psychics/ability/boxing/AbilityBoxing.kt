@@ -42,11 +42,11 @@ class AbilityConceptBoxing : AbilityConcept() {
         type = AbilityType.PASSIVE
         durationTime = 5000L
         description = listOf(
-            text("${durationTime / 1000.0}초 안에 적을 연속해서 공격시 콤보 간격이 정해집니다."),
+            text("지속 시간 안에 적을 연속해서 공격시 콤보 간격이 정해집니다."),
             text("공격시 공격 시기가 콤보 간격에 가까울수록 적에게"),
             text("주는 피해가 늘어납니다. 또한 두 시간 차이가 "),
             text("일정 시간 이하일 경우 추가로 적을 잠시동안 실명시킵니다."),
-            text("콤보 간격이 정해진 이후에 ${durationTime / 1000.0}초 안에 적에게 피해를"),
+            text("콤보 간격이 정해진 이후 지속 시간 안에 적에게 피해를"),
             text("입히지 않은 경우 콤보 간격은 초기화 됩니다.")
         )
         wand = ItemStack(Material.FIRE_CHARGE)

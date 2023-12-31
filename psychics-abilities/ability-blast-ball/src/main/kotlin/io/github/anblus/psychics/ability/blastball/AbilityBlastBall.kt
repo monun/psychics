@@ -37,7 +37,7 @@ class AbilityConceptBlastBall : AbilityConcept() {
     val ballGravity = 0.04
 
     @Config
-    val ballSpeedMultipleOnCollision = 0.7
+    val ballSpeedMultipleOnCollision = 0.8
 
     @Config
     val ballSpeedMultipleOnUpdate = 0.97
@@ -49,7 +49,7 @@ class AbilityConceptBlastBall : AbilityConcept() {
     val blastKnockBack = 0.7
 
     @Config
-    val blastTick = 100
+    val blastTick = 150
 
     @Config
     val blastRange = 3.0

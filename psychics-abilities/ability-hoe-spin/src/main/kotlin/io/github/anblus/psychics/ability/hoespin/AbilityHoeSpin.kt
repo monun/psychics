@@ -51,7 +51,7 @@ class AbilityConceptHoeSpin : AbilityConcept() {
     init {
         displayName = "스핀"
         type = AbilityType.ACTIVE
-        cooldownTime = 1500L
+        cooldownTime = 500L
         cost = 10.0
         range = 128.0
         damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 1.5))

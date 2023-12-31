@@ -57,7 +57,7 @@ class AbilityConceptElectricShockWave : AbilityConcept() {
         castingTime = 1000L
         cost = 50.0
         range = 16.0
-        damage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 4.0)
+        damage = Damage.of(DamageType.RANGED, EsperAttribute.ATTACK_DAMAGE to 5.0)
         description = listOf(
             text("사용 시 바라보는 방향에 전격파를 발사합니다."),
             text("전격파에 맞은 적은 피해를 입음과 동시에 실명에 걸리고"),

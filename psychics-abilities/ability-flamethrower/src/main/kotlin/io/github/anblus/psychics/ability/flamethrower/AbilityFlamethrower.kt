@@ -43,14 +43,15 @@ class AbilityConceptFlamethrower : AbilityConcept() {
     val blameWiggle = 0.6
 
     @Config
-    val blockFiredPercent = 0.05
+    val blockFiredPercent = 0.03
+
     init {
         displayName = "화염 방사"
         type = AbilityType.ACTIVE
-        cost = 5.0
+        cost = 10.0
         range = 12.0
         cooldownTime = 1000L
-        damage = Damage.of(DamageType.FIRE, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.5))
+        damage = Damage.of(DamageType.FIRE, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.25))
         description = listOf(
             text("바라보는 방향으로 상대를 불태우는 투사체를 방사합니다."),
             text("매 초 마나를 소비하고 사용 중에 좌클릭을 누르거나"),

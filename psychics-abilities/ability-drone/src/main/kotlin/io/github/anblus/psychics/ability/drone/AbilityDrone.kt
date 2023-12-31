@@ -32,10 +32,10 @@ import org.bukkit.util.Vector
 @Name("drone")
 class AbilityConceptDrone : AbilityConcept() {
     @Config
-    val explosionRange = 2.0
+    val explosionRange = 2.5
 
     @Config
-    val missileSpeed = 0.5
+    val missileSpeed = 0.6
 
     @Config
     val missileCool = 2.0
@@ -48,9 +48,9 @@ class AbilityConceptDrone : AbilityConcept() {
         type = AbilityType.ACTIVE
         cooldownTime = 20000L
         durationTime = 10000L
-        range = 24.0
+        range = 16.0
         cost = 50.0
-        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 3.0))
+        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 2.0))
         description = listOf(
             text("능력 사용 시 지속 시간 동안 비행이 가능하며"),
             text("주위 적들에게 폭발하는 유도 미사일을 발사합니다."),

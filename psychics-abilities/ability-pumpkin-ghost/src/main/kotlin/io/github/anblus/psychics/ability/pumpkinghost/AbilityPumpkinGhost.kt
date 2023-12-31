@@ -1,9 +1,6 @@
 package io.github.anblus.psychics.ability.pumpkinghost
 
-import io.github.monun.psychics.AbilityConcept
-import io.github.monun.psychics.AbilityType
-import io.github.monun.psychics.ActiveAbility
-import io.github.monun.psychics.PsychicProjectile
+import io.github.monun.psychics.*
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.damage.Damage
@@ -28,8 +25,9 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.player.PlayerEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -43,7 +41,7 @@ class AbilityConceptPumpkinGhost : AbilityConcept() {
     val pumpkinSpeed = 0.8
 
     @Config
-    val costPerHalf = 0.5
+    val costPerHalf = 0.25
 
     @Config
     val detectionPreparationTick = 100
@@ -65,11 +63,12 @@ class AbilityConceptPumpkinGhost : AbilityConcept() {
         damage = Damage.of(DamageType.BLAST, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 6.0))
         knockback = 0.2
         description = listOf(
-            text("사용 시 마나를 소모해 유령이 깃든 잭오랜턴 하나를 얻습니다."),
+            text("좌클릭 시 마나를 소모해 유령이 깃든 잭오랜턴 하나를 얻습니다."),
             text("유령이 깃든 잭오랜턴은 설치 후 일정 시간이 지나면 탐지를 시작합니다."),
             text("탐지 중인 잭오랜턴의 앞에 적이 있을 경우 즉시 앞으로 돌진해 폭발합니다."),
             text("탐지 중인 잭오랜턴은 매 초 마나를 소모합니다. 마나가 없을 시 소멸합니다."),
-            text("폭발에 맞은 적은 소량의 넉백과 함께 발광 효과가 부여됩니다.")
+            text("폭발에 맞은 적은 소량의 넉백과 함께 발광 효과가 부여됩니다."),
+            text("우클릭 시 탐지 중인 잭오랜턴을 모두 소멸시킵니다.")
         )
         wand = ItemStack(Material.BLAZE_ROD)
     }
@@ -80,7 +79,7 @@ class AbilityConceptPumpkinGhost : AbilityConcept() {
     }
 }
 
-class AbilityPumpkinGhost : ActiveAbility<AbilityConceptPumpkinGhost>(), Listener {
+class AbilityPumpkinGhost : Ability<AbilityConceptPumpkinGhost>(), Listener {
     companion object {
         private val hauntedPumpkin = ItemStack(Material.JACK_O_LANTERN).apply {
             itemMeta = itemMeta.apply {
@@ -99,18 +98,51 @@ class AbilityPumpkinGhost : ActiveAbility<AbilityConceptPumpkinGhost>(), Listene
         }
     }
 
+    private var pumpkinList = arrayListOf<Pumpkin>()
+
     override fun onEnable() {
         psychic.registerEvents(this)
     }
 
-    override fun onCast(event: PlayerEvent, action: WandAction, target: Any?) {
-        val player = esper.player
+    @EventHandler
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val action = event.action
 
-        psychic.consumeMana(concept.cost)
-        cooldownTime = concept.cooldownTime
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            event.item?.let { item ->
+                if (item.type == concept.wand?.type) {
+                    val player = esper.player
 
-        player.inventory.addItem(hauntedPumpkin)
-        player.playSound(player.location, Sound.ENTITY_GHAST_SCREAM, 1.5f, 2.0f)
+                    val result = test()
+                    if (result != TestResult.Success) {
+                        result.message(this)?.let { player.sendActionBar(it) }
+                        return
+                    }
+
+                    psychic.consumeMana(concept.cost)
+                    cooldownTime = concept.cooldownTime
+
+                    player.inventory.addItem(hauntedPumpkin)
+                    player.playSound(player.location, Sound.ENTITY_GHAST_SCREAM, 1.5f, 2.0f)
+                }
+            }
+        } else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+            event.item?.let { item ->
+                if (item.type == concept.wand?.type) {
+                    val player = esper.player
+
+                    if (pumpkinList.isEmpty()) {
+                        player.sendActionBar(text().content("소멸 시킬 호박이 존재하지 않습니다").decorate(TextDecoration.BOLD).build())
+                        return
+                    }
+
+                    repeat(pumpkinList.size) {
+                        pumpkinList[0].pumpkinRemove()
+                    }
+                    player.playSound(player.location, Sound.BLOCK_CHAIN_BREAK, 2.0f, 0.2f)
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -121,7 +153,7 @@ class AbilityPumpkinGhost : ActiveAbility<AbilityConceptPumpkinGhost>(), Listene
             if (location.block.type == Material.JACK_O_LANTERN) {
                 val world = location.world
 
-                Pumpkin(location)
+                pumpkinList.add(Pumpkin(location))
                 world.spawnParticle(Particle.SOUL, location, 8, 0.5, 0.5, 0.5, 0.03)
                 world.playSound(location, Sound.ENTITY_PARROT_IMITATE_GHAST, 1.5f, 0.1f)
             }
@@ -188,7 +220,8 @@ class AbilityPumpkinGhost : ActiveAbility<AbilityConceptPumpkinGhost>(), Listene
 
         }
 
-        private fun pumpkinRemove() {
+        fun pumpkinRemove() {
+            pumpkinList.remove(this)
             location.block.type = Material.AIR
             location.world.spawnParticle(Particle.SOUL, location, 8, 0.5, 0.5, 0.5, 0.03)
             timer!!.cancel()

@@ -7,7 +7,6 @@ import io.github.monun.psychics.Channel
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
 import io.github.monun.psychics.util.friendlyFilter
-import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 import io.github.monun.tap.trail.TrailSupport
 import net.kyori.adventure.text.Component.text
@@ -31,14 +30,12 @@ import kotlin.math.sqrt
 @Name("guardian")
 class AbilityConceptGuardian : AbilityConcept() {
 
-    @Config
-    val guardianRange = 16.0
-
     init {
         displayName = "수호자"
         type = AbilityType.ACTIVE
         cooldownTime = 10000L
         cost = 60.0
+        range = 16.0
         castingTime = 2000L
         healing = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 1.0)
         description = listOf(
@@ -47,7 +44,6 @@ class AbilityConceptGuardian : AbilityConcept() {
             text("시전 중에는 움직일 수 없습니다.")
         )
         wand = ItemStack(Material.PRISMARINE_SHARD)
-
     }
 
 }
@@ -62,7 +58,6 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
     }
 
     override fun onEnable() {
-        psychic.registerEvents(this)
         psychic.runTaskTimer(this::onTicks, 0L, 20L)
         psychic.runTaskTimer({
             guardian?.let { guardian ->
@@ -80,7 +75,7 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
         guardian?.let { guardian ->
             if (!guardian.isDead) {
                 val location = guardian.eyeLocation
-                val range = concept.guardianRange
+                val range = concept.range
                 location.getNearbyEntities(
                     range.toDouble(), range.toDouble(), range.toDouble()
                 ).filter { entity -> esper.player.friendlyFilter().test(entity) }
@@ -96,7 +91,7 @@ class AbilityGuardian : ActiveAbility<AbilityConceptGuardian>(), Listener {
                             val hitResult = world.rayTrace(
                                 location,
                                 direction,
-                                concept.guardianRange,
+                                concept.range,
                                 FluidCollisionMode.NEVER,
                                 true,
                                 1.0

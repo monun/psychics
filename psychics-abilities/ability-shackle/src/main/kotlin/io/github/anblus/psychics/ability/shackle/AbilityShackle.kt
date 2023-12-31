@@ -1,5 +1,7 @@
 package io.github.anblus.psychics.ability.shackle
 
+import com.destroystokyo.paper.event.entity.EntityJumpEvent
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.github.monun.psychics.*
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.attribute.EsperStatistic
@@ -13,7 +15,6 @@ import io.github.monun.tap.fake.Movement
 import io.github.monun.tap.fake.Trail
 import io.github.monun.tap.math.normalizeAndLength
 import io.github.monun.tap.task.TickerTask
-import io.papermc.paper.event.entity.EntityMoveEvent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -28,9 +29,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityTeleportEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
 import kotlin.math.round
 import kotlin.random.Random.Default.nextDouble
@@ -40,10 +42,10 @@ import kotlin.random.Random.Default.nextDouble
 class AbilityConceptShackle : AbilityConcept() {
 
     @Config
-    val durationPerCost = 1.0
+    val durationPerCost = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 1.0)
 
     @Config
-    val maxDurationAboutOne = 5.0
+    val maxDurationAboutOne = EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 5.0)
 
     @Config
     val invalidTimeToShackle = 2.0
@@ -51,7 +53,7 @@ class AbilityConceptShackle : AbilityConcept() {
     init {
         displayName = "속박"
         type = AbilityType.ACTIVE
-        cost = 10.0
+        cost = 8.0
         cooldownTime = 0L
         range = 20.0
         description = listOf(
@@ -68,8 +70,8 @@ class AbilityConceptShackle : AbilityConcept() {
     }
 
     override fun onRenderTooltip(tooltip: TooltipBuilder, stats: (EsperStatistic) -> Double) {
-        tooltip.stats(stats(EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to durationPerCost))) { NamedTextColor.DARK_PURPLE to "마나 소모당 구속 시간" to "초" }
-        tooltip.stats(stats(EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to maxDurationAboutOne))) { NamedTextColor.DARK_GREEN to "최대 구속 시간" to "초" }
+        tooltip.stats(stats(durationPerCost)) { NamedTextColor.DARK_PURPLE to "마나 소모당 구속 시간" to "초" }
+        tooltip.stats(stats(maxDurationAboutOne)) { NamedTextColor.DARK_GREEN to "최대 구속 시간" to "초" }
     }
 }
 
@@ -264,13 +266,13 @@ class AbilityShackle : Ability<AbilityConceptShackle>(), Listener {
 
         private var invalidTick: Int = round(concept.invalidTimeToShackle * 20.0).toInt()
 
-        private val defaultDurationTick: Int = round(concept.durationPerCost * 20.0).toInt()
+        private val defaultDurationTick: Int = round(esper.getStatistic(concept.durationPerCost) * 20.0).toInt()
 
-        private var durationTick: Int = round(concept.durationPerCost * 20.0).toInt()
+        private var durationTick: Int = round(esper.getStatistic(concept.durationPerCost) * 20.0).toInt()
 
         private var totalTick: Int = 0
 
-        private var maxTick: Int = round(concept.maxDurationAboutOne * 20.0).toInt()
+        private var maxTick: Int = round(esper.getStatistic(concept.maxDurationAboutOne) * 20.0).toInt()
 
         init {
             repeat(8) {
@@ -302,6 +304,7 @@ class AbilityShackle : Ability<AbilityConceptShackle>(), Listener {
                         untie()
                     } else {
                         durationTick --
+                        entity.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 3, 4))
                         fakeWeb.forEachIndexed { i, web ->
                             web.moveTo(entity.boundingBox.center.toLocation(entity.world).add(fakeWebLocation[i]).apply {
                                 yaw += fakeWebYaw[i]
@@ -352,13 +355,13 @@ class AbilityShackle : Ability<AbilityConceptShackle>(), Listener {
         }
 
         @EventHandler(ignoreCancelled = true)
-        fun onEntityMove(event: EntityMoveEvent) {
-            if (event.hasChangedPosition()) event.isCancelled = true
+        fun onEntityJump(event: EntityJumpEvent) {
+            event.isCancelled = true
         }
 
         @EventHandler(ignoreCancelled = true)
-        fun onPlayerMove(event: PlayerMoveEvent) {
-            if (event.hasChangedPosition()) event.isCancelled = true
+        fun onPlayerJump(event: PlayerJumpEvent) {
+            event.isCancelled = true
         }
     }
 }

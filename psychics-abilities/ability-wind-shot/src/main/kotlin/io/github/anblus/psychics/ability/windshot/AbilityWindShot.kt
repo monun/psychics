@@ -32,17 +32,17 @@ class AbilityConceptWindShot : AbilityConcept() {
     val windSpeed = 1.0
 
     @Config
-    val windWiggle = 0.07
+    val windWiggle = 0.06
 
     init {
         displayName = "장풍"
         type = AbilityType.ACTIVE
-        cost = 10.0
+        cost = 15.0
         range = 128.0
         knockback = 1.2
         cooldownTime = 1000L
         castingTime = 1000L
-        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.3))
+        damage = Damage.of(DamageType.RANGED, EsperStatistic.of(EsperAttribute.ATTACK_DAMAGE to 0.1))
         description = listOf(
             text("바라보는 방향으로 장풍을 일으킵니다.")
         )

@@ -24,6 +24,7 @@ import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.player.PlayerEvent
@@ -38,7 +39,7 @@ import kotlin.random.Random.Default.nextInt
 class AbilityConceptFalconer : AbilityConcept() {
 
     @Config
-    val spawnLimitOfPhantom = 5
+    val spawnLimitOfPhantom = 6
 
     @Config
     val phantomTeleportRange = 12.0
@@ -55,8 +56,8 @@ class AbilityConceptFalconer : AbilityConcept() {
     init {
         displayName = "매잡이"
         type = AbilityType.ACTIVE
-        cost = 25.0
-        cooldownTime = 2000L
+        cost = 20.0
+        cooldownTime = 500L
         castingTime = 3000L
         range = 36.0
         description = listOf(
@@ -269,6 +270,11 @@ class AbilityFalconer : ActiveAbility<AbilityConceptFalconer>(), Listener {
             cooldownTime = concept.cooldownTime
             psychic.consumeMana(concept.cost)
 
+            commonTarget?.let { target ->
+                player.sendMessage(text().content("조련에 의해 ${target.name}의 공격에 대한 명령이 해제됐습니다.").color(TextColor.color(122, 122, 122)).build())
+                commonTarget = null
+            }
+
             val location = bone.location
 
             world.spawnParticle(Particle.HEART, location, 6, 0.75, 0.75, 0.75, 0.08)
@@ -330,6 +336,13 @@ class AbilityFalconer : ActiveAbility<AbilityConceptFalconer>(), Listener {
             }
 
             event.drops.clear()
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onDamaged(event: EntityDamageEvent) {
+        if (event.entity !is Player) {
+            if (event.cause == EntityDamageEvent.DamageCause.SUFFOCATION) event.isCancelled = true
         }
     }
 
