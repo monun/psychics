@@ -170,19 +170,19 @@ class AbilityBomber : ActiveAbility<AbilityConceptBomber>(), Listener {
      * 가짜 TNT 효과
      */
     inner class TNT(location: Location) {
-        private val stand: FakeEntity
-        private val tnt: FakeEntity
+        private val stand: FakeEntity<ArmorStand>
+        private val tnt: FakeEntity<TNTPrimed>
 
         init {
             val psychic = psychic
             stand = psychic.spawnFakeEntity(location, ArmorStand::class.java).apply {
-                updateMetadata<ArmorStand> {
+                updateMetadata {
                     isMarker = true
                     isInvisible = true
                 }
             }
             tnt = psychic.spawnFakeEntity(location, TNTPrimed::class.java).apply {
-                updateMetadata<TNTPrimed> {
+                updateMetadata {
                     fuseTicks = (durationTime / 50L).toInt()
                 }
             }

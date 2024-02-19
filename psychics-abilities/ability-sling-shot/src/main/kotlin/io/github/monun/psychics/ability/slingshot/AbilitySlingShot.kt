@@ -76,7 +76,7 @@ class AbilitySlingShot : Ability<AbilityConceptSlingShot>(), Listener {
                     val projectile = CobblestoneProjectile().apply {
                         cobblestone =
                             this@AbilitySlingShot.psychic.spawnFakeEntity(location, ArmorStand::class.java).apply {
-                                updateMetadata<ArmorStand> {
+                                updateMetadata {
                                     isVisible = false
                                     isMarker = true
                                 }
@@ -97,7 +97,7 @@ class AbilitySlingShot : Ability<AbilityConceptSlingShot>(), Listener {
     }
 
     inner class CobblestoneProjectile : PsychicProjectile(1200, concept.range) {
-        lateinit var cobblestone: FakeEntity
+        lateinit var cobblestone: FakeEntity<ArmorStand>
 
         override fun onPreUpdate() {
             velocity = velocity.apply { y -= concept.stoneGravity }

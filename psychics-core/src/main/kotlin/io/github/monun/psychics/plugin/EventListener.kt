@@ -20,6 +20,7 @@ package io.github.monun.psychics.plugin
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import io.github.monun.psychics.*
+import io.github.monun.psychics.effect.NO_DAMAGE_FIREWORK_FLAG
 import io.github.monun.psychics.item.enchantability
 import io.github.monun.psychics.item.isPsychicbound
 import io.github.monun.psychics.item.psionicsLevel
@@ -27,11 +28,14 @@ import io.github.monun.psychics.item.removeAllPsychicbounds
 import io.github.monun.tap.fake.FakeEntityServer
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.enchantment.EnchantItemEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -197,6 +201,21 @@ class EventListener(
             }
         }
     }
+
+
+    @EventHandler
+    fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
+        val damager = event.damager
+        val cause = event.cause
+        if (
+            damager is Firework &&
+            cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION &&
+            damager.hasMetadata(NO_DAMAGE_FIREWORK_FLAG)
+            ) {
+            event.isCancelled = true
+        }
+    }
+
 
     private val Player.esper: Esper
         get() = requireNotNull(psychicManager.getEsper(this))

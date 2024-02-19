@@ -6,9 +6,10 @@ import io.github.monun.psychics.Channel
 import io.github.monun.psychics.attribute.EsperAttribute
 import io.github.monun.psychics.damage.Damage
 import io.github.monun.psychics.damage.DamageType
+import io.github.monun.psychics.effect.spawnFirework
 import io.github.monun.psychics.util.hostileFilter
 import io.github.monun.tap.config.Name
-import io.github.monun.tap.effect.playFirework
+//import io.github.monun.tap.effect.playFirework
 import net.kyori.adventure.text.Component.text
 import org.bukkit.*
 import org.bukkit.entity.LivingEntity
@@ -35,10 +36,6 @@ class AbilityConceptSample : AbilityConcept() {
 class AbilitySample : ActiveAbility<AbilityConceptSample>(), Listener {
     companion object {
         private val effect = FireworkEffect.builder().with(FireworkEffect.Type.BURST).withColor(Color.RED).build()
-
-        private fun LivingEntity.playPsychicEffect() {
-            world.playFirework(location, effect)
-        }
     }
 
     override fun onInitialize() {
@@ -84,5 +81,9 @@ class AbilitySample : ActiveAbility<AbilityConceptSample>(), Listener {
 
         target.psychicDamage()
         target.playPsychicEffect()
+    }
+
+    private fun LivingEntity.playPsychicEffect() {
+        world.spawnFirework(location, effect, psychic.plugin)
     }
 }

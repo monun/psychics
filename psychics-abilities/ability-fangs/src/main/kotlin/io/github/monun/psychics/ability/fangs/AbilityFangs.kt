@@ -134,7 +134,7 @@ class AbilityFangs : ActiveAbility<AbilityConceptFangs>(), Listener {
 
     private class Fang(
         val location: Location,
-        val fakeEntity: FakeEntity,
+        val fakeEntity: FakeEntity<EvokerFangs>,
         var nextRunTime: Long,
         val damaged: MutableSet<Entity>
     ) : Comparable<Fang> {
