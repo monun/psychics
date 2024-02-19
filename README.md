@@ -15,4 +15,4 @@
 ---
 ## TODO
 
-* [ ] Show Firework without Tap Effect Util 
+* [x] Show Firework without Tap Effect Util 

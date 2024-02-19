@@ -2,6 +2,7 @@ package io.github.monun.psychics.ability.berserker
 
 import io.github.monun.psychics.AbilityConcept
 import io.github.monun.psychics.ActiveAbility
+import io.github.monun.psychics.effect.spawnFirework
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.Name
 //import io.github.monun.tap.effect.playFirework
@@ -64,7 +65,7 @@ class AbilityBerserker : ActiveAbility<AbilityConceptBerserker>(), Listener {
         val location = player.location.apply { y += 2.0 }
         val world = location.world
         val firework = FireworkEffect.builder().with(FireworkEffect.Type.BURST).withColor(Color.RED).withFlicker().build()
-        //world.playFirework(location, firework) //TODO: Show Firework without Tap Effect Util
+        world.spawnFirework(location, firework, psychic.plugin)
     }
 
     @EventHandler(ignoreCancelled = true)
