@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.FireworkMeta
 
 fun World.spawnFirework(
     x: Double, y: Double, z: Double,
-    world: World, effect: FireworkEffect, plugin: Plugin
+    world: World, effect: FireworkEffect, plugin: Plugin,
     hasDamage: Boolean = false, power: Int = 0, ticksToDetonate: Int = 0
 ): Firework {
     val location = Location(world, x, y, z)
@@ -26,7 +26,7 @@ fun World.spawnFirework(
 }
 fun World.spawnFirework(
     loc: Location,
-    effect: FireworkEffect, plugin: Plugin
+    effect: FireworkEffect, plugin: Plugin,
     hasDamage: Boolean = false, power: Int = 0, ticksToDetonate: Int = 0
 ) =
     spawnFirework(loc.x, loc.y, loc.z, loc.world, effect, hasDamage, power, ticksToDetonate)
