@@ -28,11 +28,14 @@ import io.github.monun.psychics.item.removeAllPsychicbounds
 import io.github.monun.tap.fake.FakeEntityServer
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.enchantment.EnchantItemEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent

@@ -65,7 +65,7 @@ class AbilityBerserker : ActiveAbility<AbilityConceptBerserker>(), Listener {
         val location = player.location.apply { y += 2.0 }
         val world = location.world
         val firework = FireworkEffect.builder().with(FireworkEffect.Type.BURST).withColor(Color.RED).withFlicker().build()
-        world.spawnFirework(location, firework, psychics.plugin)
+        world.spawnFirework(location, firework, psychic.plugin)
     }
 
     @EventHandler(ignoreCancelled = true)
