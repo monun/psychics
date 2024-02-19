@@ -20,6 +20,7 @@ package io.github.monun.psychics.plugin
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import io.github.monun.psychics.*
+import io.github.monun.psychics.effect.NO_DAMAGE_FIREWORK_FLAG
 import io.github.monun.psychics.item.enchantability
 import io.github.monun.psychics.item.isPsychicbound
 import io.github.monun.psychics.item.psionicsLevel
@@ -197,6 +198,21 @@ class EventListener(
             }
         }
     }
+
+
+    @EventHandler
+    fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
+        val damager = event.damager
+        val cause = event.cause
+        if (
+            damager is Firework &&
+            cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION &&
+            damager.hasMetadata(NO_DAMAGE_FIREWORK_FLAG)
+            ) {
+            event.isCancelled = true
+        }
+    }
+
 
     private val Player.esper: Esper
         get() = requireNotNull(psychicManager.getEsper(this))
